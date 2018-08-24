@@ -1,0 +1,121 @@
+<div class="page-header" style="text-align: center;">
+    <h1>跳蚤市场
+        <small>安徽工程大学二手交易市场</small>
+    </h1>
+</div>
+
+<div class="center-block">
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label class="col-sm-2 control-label">类别</label>
+            <div class="col-sm-4">
+                <select class="form-control" id="inputProductCategory">
+                    <option selected></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <input type="hidden" th:value="${product?.id}" id="productId">
+            <label class="col-sm-2 control-label">名称</label>
+            <div class="col-sm-4">
+                <input type="text" th:value="${product?.name}" class="form-control" id="inputName" placeholder="请输入商品名称">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">价格</label>
+            <div class="col-sm-4">
+                <input type="text" th:value="${product?.price}" class="form-control" id="inputPrice" placeholder="请输入价格">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">简介</label>
+            <div class="col-sm-4">
+                <textarea th:value="${product?.introduction}" th:text="${product?.introduction}" class="form-control" rows="4" id="inputIntroduction"
+                          placeholder="请输入商品简介"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">商品图片</label>
+            <div class="col-sm-4">
+                <textarea name="content1"
+                          cols="100" rows="8"
+                          style="width:700px;height:200px;visibility:hidden;"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button class="btn btn-default" type="button" onclick="release()">提交</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script th:inline="javascript">
+    var product = /*[[${product}]]*/{};
+    var pictures = [];
+
+    $(document).ready(function () {
+        getProductCategory();
+    });
+
+    KindEditor.ready(function (K) {
+        var editor1 = K.create('textarea[name="content1"]', {
+            items: ['image', '|', 'multiimage'],
+            cssPath: '/emall/static/kindeditor/plugins/code/prettify.css',
+            filePostName: 'picture',
+            uploadJson: '/emall/picture/save',
+            afterUpload: function (url) {
+                var image = {picture: url};
+                pictures.push(image);
+            },
+            dir: 'image'
+        });
+        prettyPrint();
+    });
+
+    function release() {
+        $.ajax({
+            type: 'post',
+            contentType: 'application/json',
+            url: '/emall/product/save',
+            data: JSON.stringify({
+                id:$('#productId').val(),
+                productCategoryId: $('#inputProductCategory').val(),
+                name: $('#inputName').val(),
+                price: $('#inputPrice').val(),
+                introduction: $('#inputIntroduction').val(),
+                pictures: pictures
+            }),
+            success: function (data) {
+                pictures = [];
+                if (data.code == "1000") {
+                    alert('发布成功');
+                }
+                else if (data.code == "500") {
+                    alert('发布失败');
+                }
+            }
+        })
+    }
+
+    function getProductCategory() {
+        $.ajax({
+            url: '/emall/product/category/search',
+            success: function (data) {
+                renderProductCategory(data.productCategorys);
+            }
+        })
+    }
+
+    function renderProductCategory(data) {
+        var productCategory = $('#inputProductCategory');
+        $.each(data, function (i, category) {
+            var categoryContent = $('<option value="' + category.id + '">' + category.category + '</option>');
+            if(product != null && product.productCategoryId == category.id){
+                categoryContent.attr('selected','selected');
+            }
+            productCategory.append(categoryContent);
+        })
+    }
+</script>

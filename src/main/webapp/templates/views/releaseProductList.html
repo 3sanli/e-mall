@@ -1,0 +1,71 @@
+<div th:replace="layouts/search"></div>
+
+<div class="items"></div>
+
+<div th:replace="layouts/pager"></div>
+
+<script th:inline="javascript">
+    var products = /*[[${products}]]*/{};
+    var pager = /*[[${pager}]]*/{};
+
+    $(document).ready(function () {
+        renderReleases();
+        renderPager(pager);
+    })
+
+    function renderReleases() {
+        $.each(products, function (i, product) {
+            var image = "";
+            $.each(product.pictures, function (j, picture) {
+                if (picture.main && image == "") {
+                    image = picture.picture;
+                }
+            });
+            var items = $('.items');
+            var item = $('<div class="media"></div>');
+
+            var picture = $('<div class="media-left">\n' +
+                '        <a href="#">\n' +
+                '            <img style="width: 80px;height: 80px;" class="media-object" src="' + image + '" alt="' + product.name + '">\n' +
+                '        </a>\n' +
+                '    </div>');
+
+            var info = $('<div class="media-body">\n' +
+                '        <a class="media-heading" href="/emall/product/detail?id=' + product.id + '">' + product.name + '</a>\n' +
+                '        <p>￥' + product.price + '</p>\n' +
+                '        <p>' + product.introduction + '</p>\n' +
+                '        <p>' + product.status + '</p>\n' +
+                '    </div>');
+
+            if(product.status == 'RELEASING'){
+                info.append('<button type="button" class="btn btn-danger" onclick="modifyRelease('+ product.id +')">修改</button>' +
+                    '<button type="button" class="btn btn-danger" onclick="cancelRelease('+ product.id +')">删除</button>')
+            }
+
+            item.append(picture);
+            item.append(info);
+            items.append(item);
+        });
+    }
+
+    function cancelRelease(id) {
+        $.ajax({
+            type: 'post',
+            url: '/emall/product/delete',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                id: id
+            }),
+            success: function (data) {
+                if (data.code == '1000') {
+                    alert('删除成功');
+                    window.location.href = '/emall/product/release/list';
+                }
+            }
+        })
+    }
+
+    function modifyRelease(id) {
+        window.location.href = '/emall/product/release?id='+id;
+    }
+</script>

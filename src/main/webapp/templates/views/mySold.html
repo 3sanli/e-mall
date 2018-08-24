@@ -1,0 +1,65 @@
+<div th:replace="layouts/search"></div>
+
+<div class="items"></div>
+
+<div th:replace="layouts/pager"></div>
+
+<script th:inline="javascript">
+    var solds = /*[[${solds}]]*/{};
+    var pager = /*[[${pager}]]*/{};
+
+    $(document).ready(function () {
+        renderBuys();
+        renderPager(pager);
+    })
+
+    function renderBuys() {
+        $.each(solds, function (i, sold) {
+            var image = "";
+            var product = sold.product;
+            $.each(product.pictures, function (j, picture) {
+                if (picture.main && image == "") {
+                    image = picture.picture;
+                }
+            });
+            var items = $('.items');
+            var item = $('<div class="media"></div>');
+
+            var picture = $('<div class="media-left">\n' +
+                '        <a href="#">\n' +
+                '            <img style="width: 80px;height: 80px;" class="media-object" src="' + image + '" alt="' + product.name + '">\n' +
+                '        </a>\n' +
+                '    </div>');
+
+            var info = $('<div class="media-body">\n' +
+                '        <a class="media-heading" href="/emall/product/detail?id=' + product.id + '">' + product.name + '</a>\n' +
+                '        <p>￥' + product.price + '</p>\n' +
+                '        <p>' + product.introduction + '</p>\n' +
+                '        <p>' + product.status + '</p>\n' +
+                '    </div>');
+
+
+            info.append('<button type="button" class="btn btn-danger" onclick="deleteSold(' + sold.id + ')">删除</button>');
+
+            item.append(picture);
+            item.append(info);
+            items.append(item);
+        });
+    }
+
+    function deleteSold(id) {
+        $.ajax({
+            type: 'post',
+            url: '/emall/product/sold/delete',
+            data: {
+                id: id
+            },
+            success: function (data) {
+                if (data.code == '1000') {
+                    alert('删除成功');
+                    window.location.href = '/emall/product/sold/list';
+                }
+            }
+        })
+    }
+</script>

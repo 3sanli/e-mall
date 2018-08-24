@@ -1,0 +1,79 @@
+<div class="page-header" style="text-align: center;">
+    <h1>跳蚤市场
+        <small>安徽工程大学二手交易市场</small>
+    </h1>
+</div>
+
+<div class="center-block">
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label class="col-sm-2 control-label">评价</label>
+            <div class="col-sm-4">
+                <textarea id="inputComment" name="content1"
+                          cols="100" rows="8"
+                          style="width:700px;height:200px;visibility:hidden;"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">评分</label>
+            <div class="col-sm-4">
+                <select class="form-control" id="inputCredit">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3" selected>3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button class="btn btn-default" type="button" onclick="comment()">提交</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script th:inline="javascript">
+    var productId = /*[[${productId}]]*/{};
+
+    KindEditor.ready(function (K) {
+        var editor1 = K.create('textarea[name="content1"]', {
+            items: [
+                'source', '|', 'undo', 'redo', '|', 'preview', 'template', 'code', 'cut', 'copy', 'paste',
+                'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
+                'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
+                'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',
+                'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
+                'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|',
+                'hr', 'emoticons', 'pagebreak',
+                'anchor', 'link', 'unlink', '|', 'about'
+            ],
+            afterBlur: function () {
+                this.sync();
+            },
+            cssPath: '/emall/static/kindeditor/plugins/code/prettify.css'
+        });
+        prettyPrint();
+    });
+
+    function comment() {
+        $.ajax({
+            type: 'post',
+            contentType: 'application/json',
+            url: '/emall/product/comment/save',
+            data: JSON.stringify({
+                productId: productId,
+                comment:$('#inputComment').val(),
+                credit: $('#inputCredit').val()
+            }),
+            success: function (data) {
+                if (data.code == '1000') {
+                    alert('评论成功');
+                    window.location.href = '/emall/product/buy/list';
+                }
+            }
+        })
+    }
+
+</script>

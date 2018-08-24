@@ -1,0 +1,25 @@
+<nav aria-label="...">
+    <ul class="pager">
+        <li><a id="buttonPrePage" href="#">上一页</a></li>
+        <li><a href="#" id="nowPage" th:value="0">1</a></li>
+        <li><a id="buttonNextPage" href="#">下一页</a></li>
+    </ul>
+</nav>
+
+<script th:inline="javascript">
+    function renderPager(pager) {
+        var nowPage = $('#nowPage');
+        nowPage.text(pager.currentPage);
+        nowPage.val(pager.currentPage);
+    }
+
+    function prePage(callBack) {
+        $('#nowPage').val($('#nowPage').val() - 1);
+        callBack();
+    }
+
+    function nextPage(callBack) {
+        $('#nowPage').val($('#nowPage').val() + 1);
+        callBack();
+    }
+</script>

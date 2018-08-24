@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.showtan.dao.BuyMapper">
+    <resultMap id="buyMap" type="Buy">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="productId" property="productId" jdbcType="INTEGER"/>
+        <result column="creatorId" property="creatorId" jdbcType="INTEGER"/>
+        <result column="creatorName" property="creatorName" jdbcType="VARCHAR"/>
+        <result column="createdTime" property="createdTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <select id="countBuy" resultType="Long">
+        SELECT COUNT(*) FROM Buy
+        <where>
+            <if test="productId != null and creatorId != null">
+                AND productId = #{productId}
+                AND creatorId = #{creatorId}
+            </if>
+                AND status = 'SWAPING'
+        </where>
+    </select>
+
+    <insert id="save">
+        INSERT INTO Buy
+        (productId,creatorId,creatorName)
+        VALUES (#{productId},#{creatorId},#{creatorName})
+    </insert>
+
+    <delete id="delete">
+        DELETE FROM Buy
+        WHERE id = #{id}
+    </delete>
+
+    <update id="updateBuy">
+        UPDATE Buy SET
+        status = #{status}
+        <where>
+            <if test="id != null">
+                id = #{id}
+            </if>
+            <if test="creatorId != null and productId != null">
+                OR creatorId = #{creatorId}
+                AND productId = #{productId}
+                AND status = 'SWAPING'
+            </if>
+        </where>
+    </update>
+
+    <select id="countAll" resultType="Long">
+        SELECT COUNT(*) FROM Buy
+        WHERE creatorId = #{creatorId}
+    </select>
+
+    <select id="search" resultMap="buyMap">
+        SELECT * FROM Buy
+        <where>
+            <if test="criteria.creatorId != null">
+                creatorId = #{criteria.creatorId}
+            </if>
+        </where>
+        ORDER BY createdTime DESC
+        <if test="page &gt;= 0 and pageSize &gt;= 0">
+            LIMIT #{page},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getByProductId" resultMap="buyMap">
+        SELECT * FROM Buy
+        <where>
+            <if test="productId != null">
+                productId = #{productId}
+            </if>
+        </where>
+    </select>
+
+    <select id="getById" resultMap="buyMap">
+        SELECT * FROM Buy
+        WHERE id = #{id}
+    </select>
+</mapper>

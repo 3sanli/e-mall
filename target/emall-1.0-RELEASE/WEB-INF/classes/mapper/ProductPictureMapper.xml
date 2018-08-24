@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.showtan.dao.ProductPictureMapper">
+    <resultMap id="productPictureMap" type="ProductPicture">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="productId" property="productId" jdbcType="INTEGER"/>
+        <result column="picture" property="picture" jdbcType="VARCHAR"/>
+        <result column="isMain" property="main" jdbcType="BIT"/>
+    </resultMap>
+
+    <insert id="save">
+        INSERT INTO ProductPicture
+        <trim prefix="(" suffixOverrides="," suffix=")">
+            productId,
+            picture,
+            isMain
+        </trim>
+        VALUES
+        <foreach collection="list" item="picture" index="index" separator="," close=";">
+            <trim prefix="(" suffixOverrides="," suffix=")">
+                #{picture.productId},
+                #{picture.picture},
+                #{picture.main}
+            </trim>
+        </foreach>
+    </insert>
+
+    <select id="getByProductIdList" resultMap="productPictureMap">
+        SELECT * FROM ProductPicture
+        <where>
+            <foreach collection="list" item="product" open="productId in (" separator="," close=")" index="i">
+                #{product.id}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="getByProductId" resultMap="productPictureMap">
+        SELECT * FROM ProductPicture
+        WHERE productId = #{productId}
+    </select>
+
+    <delete id="deleteByProductId">
+        DELETE FROM ProductPicture
+        WHERE productId = #{productId}
+    </delete>
+</mapper>

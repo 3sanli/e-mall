@@ -1,0 +1,109 @@
+<div th:replace="layouts/search"></div>
+
+<div class="items"></div>
+
+<div th:replace="layouts/pager"></div>
+
+<script th:inline="javascript">
+    var buys = /*[[${buys}]]*/{};
+    var pager = /*[[${pager}]]*/{};
+
+    $(document).ready(function () {
+        renderBuys();
+        renderPager(pager);
+    })
+
+    function renderBuys() {
+        $.each(buys, function (i, buy) {
+            var image = "";
+            var product = buy.product;
+            $.each(product.pictures, function (j, picture) {
+                if (picture.main && image == "") {
+                    image = picture.picture;
+                }
+            });
+            var items = $('.items');
+            var item = $('<div class="media"></div>');
+
+            var picture = $('<div class="media-left">\n' +
+                '        <a href="#">\n' +
+                '            <img style="width: 80px;height: 80px;" class="media-object" src="' + image + '" alt="' + product.name + '">\n' +
+                '        </a>\n' +
+                '    </div>');
+
+            var info = $('<div class="media-body">\n' +
+                '        <a class="media-heading" href="/emall/product/detail?id=' + product.id + '">' + product.name + '</a>\n' +
+                '        <p>￥' + product.price + '</p>\n' +
+                '        <p>' + product.introduction + '</p>\n' +
+                '        <p>' + buy.status + '</p>\n' +
+                '    </div>');
+
+            if (buy.status == 'SWAPING') {
+                info.append('<button type="button" class="btn btn-danger" onclick="completeBuy(' + buy.id + ')">确认收货</button>' +
+                    '<button type="button" class="btn btn-danger" onclick="cancelBuy(' + buy.id + ')">取消购买</button>');
+            } else {
+                info.append('<button type="button" class="btn btn-danger" onclick="deleteBuy(' + buy.id + ')">删除</button>');
+            }
+
+            if (buy.status == 'COMPLETED' && !buy.comment) {
+                info.append('<button type="button" class="btn btn-danger" onclick="goToComment('+ buy.productId +')">评论</button>');
+            }
+
+            item.append(picture);
+            item.append(info);
+            items.append(item);
+        });
+    }
+
+    function goToComment(productId) {
+        window.location.href = "/emall/product/comment?productId=" + productId;
+    }
+
+    function cancelBuy(id) {
+        $.ajax({
+            type: 'post',
+            url: '/emall/product/swap/cancel',
+            data: {
+                id: id
+            },
+            success: function (data) {
+                if (data.code == '1000') {
+                    alert('取消成功');
+                    window.location.href = '/emall/product/buy/list';
+                }
+            }
+        })
+    }
+
+    function completeBuy(id) {
+        $.ajax({
+            type: 'post',
+            url: '/emall/product/swap/complete',
+            data: {
+                id: id
+            },
+            success: function (data) {
+                if (data.code == '1000') {
+                    alert('收货成功');
+                    window.location.href = '/emall/product/buy/list';
+                }
+            }
+        })
+    }
+
+    function deleteBuy(id) {
+        $.ajax({
+            type: 'post',
+            url: '/emall/product/swap/delete',
+            data: {
+                id: id
+            },
+            success: function (data) {
+                if (data.code == '1000') {
+                    alert('删除成功');
+                    window.location.href = '/emall/product/buy/list';
+                }
+            }
+        })
+    }
+</script>

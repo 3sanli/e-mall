@@ -1,0 +1,90 @@
+<div class="row center-block" style="margin-bottom: 20px;">
+    <div class="col-lg-8" style="float: right;">
+        <div class="input-group">
+            <input type="text" id="name" class="form-control" placeholder="请输入商品名称...">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button" onclick="loadProducts()">Go!</button>
+            </span>
+        </div>
+    </div>
+</div>
+
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">价格 <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" onclick="loadProducts()">价格从低到高</a></li>
+                        <li><a href="#" onclick="loadProducts()">价格从高到低</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">信誉 <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" onclick="loadProducts()">信誉从低到高</a></li>
+                        <li><a href="#" onclick="loadProducts()">信誉从高到低</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="row items" style="margin-left: 10px;">
+</div>
+
+<div th:replace="layouts/pager"></div>
+
+<script th:inline="javascript">
+    var products = /*[[${products}]]*/{};
+    var pager = /*[[${pager}]]*/{};
+
+    $(document).ready(function () {
+        renderProducts(products);
+        renderPager(pager);
+    });
+
+    function loadProducts() {
+        $.ajax({
+            type: 'post',
+            url: '/emall/product/search',
+            data: {
+                searchInfo: JSON.stringify({
+                    name: $('#name').val(),
+                    productCategoryId: '',
+                    creatorId: '',
+                    priceCriteria: '',
+                    creditCriteria: ''
+                }),
+                page: $('nowPage').val()
+            },
+            success: function (data) {
+                renderProducts(data.products);
+                renderPager(data.pager);
+            }
+        });
+    }
+
+    function renderProducts(products) {
+        var items = $('.items');
+        items.empty();
+        $.each(products, function (i, product) {
+            var image = "";
+            $.each(product.pictures, function (j, pictureUrl) {
+                if ($.trim(image) == "") {
+                    image = pictureUrl.main ? pictureUrl.picture : "";
+                }
+            });
+            var item = $('<div class="col-sm-4 col-md-2 thumbnail" style="margin-right: 10px;margin-left: 10px;"></div>');
+            var item_image = $('<img style="width: 212px;height: 200px;" src="' + image + '" alt="' + product.name + '">');
+            var item_info = $('<div class="caption"><h3>￥' + product.price + '</h3><a href="/emall/product/detail?id='+ product.id +'">' + product.introduction + '</a></div>')
+            item.append(item_image);
+            item.append(item_info);
+            items.append(item);
+        });
+    }
+</script>

@@ -1,0 +1,18 @@
+<div class="row" style="margin-bottom: 20px;">
+    <div class="col-lg-8" style="float: right;">
+        <div class="input-group">
+            <input type="text" id="name" class="form-control" placeholder="请输入商品名称...">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button" id="buttonSearch">Go!</button>
+            </span>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    $(document).ready(function () {
+        $('#buttonSearch').bind('click',function () {
+            window.location.href = '/emall/portal/product/list?searchInfo='+ encodeURIComponent(JSON.stringify({name:$('#name').val()})) +'';
+        });
+    })
+</script>

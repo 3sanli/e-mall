@@ -1,0 +1,156 @@
+<style>
+    .body {
+        display: block;
+        margin-left: 100px;
+        margin-right: auto;
+        float: left;
+        width: 400px;
+    }
+</style>
+<div th:replace="layouts/search"></div>
+
+<div class="row">
+    <div class="body">
+        <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+            <!-- 轮播（Carousel）指标 -->
+            <ol class="carousel-indicators">
+            </ol>
+
+            <!-- 轮播（Carousel）项目内容 -->
+            <div class="carousel-inner" role="listbox">
+            </div>
+
+            <!-- 轮播（Carousel）导航(控制左右移动) -->
+            <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+                <span class="glyphicon glyphicon-chevron-right"></span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="body" style="float: left;margin-left: 30px;">
+        <div class="page-header" style="text-align: center;">
+            <h2 id="productName"></h2>
+        </div>
+        <div>
+            <h3 id="productPrice"></h3>
+        </div>
+        <div>
+            <h3 id="productIntroduction"></h3>
+        </div>
+        <div>
+            <h3 id="productCategory"></h3>
+        </div>
+        <div style="text-align: center;">
+            <button type="button" id="buttonBuy" class="btn btn-danger" onclick="productBuy()">立即购买</button>
+            <button type="button" id="buttonFavorites" value="false" class="btn btn-default" onclick="productFavorites()">收藏</button>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    var product = /*[[${product}]]*/{};
+    var isFavorites = /*[[${isFavorites}]]*/
+
+    $(document).ready(function () {
+        renderProductPictures(product);
+        renderProductInfo(product);
+        $('#buttonSearch').bind('click',function () {
+            window.location.href = '/emall/portal/product/list?searchInfo='+ encodeURIComponent(JSON.stringify({name:$('#name').val()})) +'';
+        });
+        if(product.status == 'SWAPING'){
+            $('#buttonBuy').attr('disabled','disabled');
+            $('#buttonBuy').text('交易中');
+        }
+        if(product.status == 'SOLD'){
+            $('#buttonBuy').attr('disabled','disabled');
+            $('#buttonBuy').text('已售出');
+        }
+        if(isFavorites){
+            $('#buttonFavorites').attr('class','btn btn-primary');
+            $('#buttonFavorites').val(true);
+        }
+    })
+
+    function renderProductPictures(data) {
+        var carousel_indicators = $('.carousel-indicators');
+        var carousel_inner = $('.carousel-inner');
+        $.each(data.pictures, function (i, picture) {
+            var item_li = $('<li data-target="#carousel-example-generic" data-slide-to="' + i + '"></li>');
+
+            var item_main = $('<div class="item">\n' +
+                '                <img style="height: 400px;" src="' + picture.picture + '" alt="' + product.name + '">\n' +
+                '                <!-- 图片描述内容 -->\n' +
+                '                <div class="carousel-caption">\n' +
+                '                    ' + product.name + '\n' +
+                '                </div>\n' +
+                '            </div>');
+
+            if (picture.main) {
+                item_li.attr('class', 'active');
+                item_main.attr('class', 'item active');
+            }
+            carousel_indicators.append(item_li);
+            carousel_inner.append(item_main);
+        });
+    }
+
+    function renderProductInfo(data) {
+        var productName = $('#productName');
+        var productPrice = $('#productPrice');
+        var productIntroduction = $('#productIntroduction');
+        var productCategory = $('#productCategory');
+
+        productCategory.html('<span class="label label-default">分类</span>' + data.productCategoryId);
+        productIntroduction.html('<span class="label label-default">简介</span>' + data.introduction);
+        productPrice.html('<span class="label label-default">价格</span>' + data.price);
+        productName.text(data.name);
+    }
+
+    function productBuy() {
+        $.ajax({
+            type: 'post',
+            contentType: 'application/json',
+            url: '/emall/product/swap/save',
+            data: JSON.stringify({
+                productId: product.id
+            }),
+            success: function (data) {
+                if (data.code == '1000') {
+                    alert('购买成功');
+                    window.location.href = '/emall/product/detail?id='+ product.id +'';
+                }
+                else {
+                    alert(data.message);
+                }
+            }
+        })
+    }
+    
+    function productFavorites() {
+        var buttonFavorites = $('#buttonFavorites');
+        $.ajax({
+            type: 'post',
+            contentType: 'application/json',
+            url: (buttonFavorites.val()=='true')?'/emall/product/favorites/delete':'/emall/product/favorites/save',
+            data: JSON.stringify({
+                productId: product.id
+            }),
+            success:function (data) {
+                if(data.code == '1000'){
+                    if(buttonFavorites.val() == 'true'){
+                        buttonFavorites.attr('class','btn btn-default');
+                        buttonFavorites.val(false);
+                    }else{
+                        buttonFavorites.attr('class','btn btn-primary');
+                        buttonFavorites.val(true);
+                    }
+                }
+            }
+        })
+    }
+</script>

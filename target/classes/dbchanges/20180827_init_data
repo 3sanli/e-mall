@@ -1,0 +1,32 @@
+INSERT INTO User
+(mobile,nickName,password)
+VALUES ('18895368350','user01','123');
+
+INSERT INTO User
+(mobile,nickName,password)
+VALUES ('18755937042','user02','123');
+
+INSERT INTO ProductCategoryDict
+(category)
+VALUES ('数码');
+
+INSERT INTO ProductCategoryDict
+(category)
+VALUES ('家用');
+
+
+INSERT INTO Product
+(name, productCategoryId, price, introduction, creatorId, creatorName)
+VALUES ('华硕zx50j','1','2500','很好的笔记本','1','user01');
+
+INSERT INTO Product
+(name, productCategoryId, price, introduction, creatorId, creatorName)
+VALUES ('荣耀magicbook','1','5699','很好的笔记本','1','user01');
+
+INSERT INTO ProductPicture
+(productId, picture)
+VALUES (1,'123456498713');
+
+INSERT INTO ProductPicture
+(productId, picture)
+VALUES (2,'459sdfdsegfer');

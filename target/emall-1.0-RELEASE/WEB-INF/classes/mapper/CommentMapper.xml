@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.showtan.dao.CommentMapper">
+    <resultMap id="commentMap" type="Comment">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="productId" property="productId" jdbcType="INTEGER"/>
+        <result column="comment" property="comment" jdbcType="VARCHAR"/>
+        <result column="creatorId" property="creatorId" jdbcType="INTEGER"/>
+        <result column="creatorName" property="creatorName" jdbcType="VARCHAR"/>
+        <result column="createdTime" property="createdTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <select id="countComment" resultType="Long">
+        SELECT COUNT(*) FROM Comment
+        <where>
+            <if test="id != null">
+                id = #{id}
+            </if>
+            <if test="productId != null and creatorId != null">
+                OR productId = #{productId}
+                AND creatorId = #{creatorId}
+            </if>
+        </where>
+    </select>
+
+    <insert id="save">
+        INSERT INTO Comment
+        (productId,comment,creatorId,creatorName)
+        VALUES (#{productId},#{comment},#{creatorId},#{creatorName})
+    </insert>
+
+    <select id="getByProductIds" resultMap="commentMap">
+        SELECT * FROM Comment
+        WHERE productId in
+        <foreach collection="list" item="product" open="(" separator="," index="i" close=")">
+            #{product.id}
+        </foreach>
+    </select>
+</mapper>
