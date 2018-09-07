@@ -21,13 +21,13 @@ public interface SoldMapper {
      * 根据条件动态查询卖出记录
      *
      * @param criteria
-     * @param page
-     * @param pageSize
+     * @param skip
+     * @param take
      * @return
      */
     List<Sold> search(@Param("criteria") SoldCriteria criteria,
-                      @Param("page") Long page,
-                      @Param("pageSize") Long pageSize);
+                      @Param("skip") Long skip,
+                      @Param("take") Long take);
 
     /**
      * 查询所有本人的卖出记录

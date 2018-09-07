@@ -1,6 +1,6 @@
 package top.showtan.util;
 
 public final class AppCondition {
-    public final static String INIT_PAGE = "0";
-    public final static String INIT_PAGESIZE = "10";
+    public static final String INIT_PAGE = "1";
+    public static final String INIT_PAGESIZE = "1";
 }

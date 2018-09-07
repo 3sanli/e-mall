@@ -21,6 +21,7 @@ import top.showtan.model.criteria.ProductCriteria;
 import top.showtan.util.BaseConvert;
 import top.showtan.util.BuyStatus;
 import top.showtan.util.PageModel;
+import top.showtan.util.PageUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,7 +114,8 @@ public class BuyService {
      */
     public PageModel<BuyModel> search(BuyCriteria criteria, Long page, Long pageSize) {
         PageModel<BuyModel> result = new PageModel<>();
-        List<Buy> buys = buyMapper.search(criteria, page, pageSize);
+        PageUtil pageUtil = new PageUtil(page, pageSize);
+        List<Buy> buys = buyMapper.search(criteria, pageUtil.getSkip(), pageUtil.getTake());
         Long totalCount = buyMapper.countAll(criteria);
         //查询所有已买记录
         List<ProductCriteria> criterias = getProductCriteriaListWithBuyList(buys);

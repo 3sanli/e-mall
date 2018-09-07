@@ -16,8 +16,12 @@ public class Pager {
 
 
     public Pager(Long totalCount, Long currentPage, Long pageSize) {
+        if (currentPage <= 0) {
+            this.currentPage = 1L;
+        }else {
+            this.currentPage = currentPage;
+        }
         this.totalCount = totalCount;
-        this.currentPage = currentPage;
         this.pageSize = pageSize;
     }
 

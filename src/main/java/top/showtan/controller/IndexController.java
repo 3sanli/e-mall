@@ -19,8 +19,6 @@ import top.showtan.util.ModelAndViewUtil;
 import top.showtan.util.PageModel;
 import top.showtan.util.Pager;
 
-import java.io.UnsupportedEncodingException;
-
 
 @Controller
 public class IndexController {
@@ -46,7 +44,7 @@ public class IndexController {
     @RequestMapping("/portal/product/list")
     public ModelAndView listProduct(@RequestParam(value = "searchInfo", required = false) String searchInfo,
                                     @RequestParam(value = "page", defaultValue = AppCondition.INIT_PAGE) Long page,
-                                    @RequestParam(value = "pageSize", defaultValue = AppCondition.INIT_PAGESIZE) Long pageSize) throws UnsupportedEncodingException {
+                                    @RequestParam(value = "pageSize", defaultValue = AppCondition.INIT_PAGESIZE) Long pageSize)  {
 
         ModelAndView mv = ModelAndViewUtil.CreateModelAndView("views/productList");
         ProductCriteria criteria = new ProductCriteria();

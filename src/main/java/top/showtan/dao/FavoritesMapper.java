@@ -43,11 +43,11 @@ public interface FavoritesMapper {
      * 查询收藏商品集合
      *
      * @param criteria
-     * @param page
-     * @param pageSize
+     * @param skip
+     * @param take
      * @return
      */
     List<Favorites> search(@Param("criteria") FavoritesCriteria criteria,
-                           @Param("page") Long page,
-                           @Param("pageSize") Long pageSize);
+                           @Param("skip") Long skip,
+                           @Param("take") Long take);
 }

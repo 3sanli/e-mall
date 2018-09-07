@@ -19,19 +19,22 @@
             <input type="hidden" th:value="${product?.id}" id="productId">
             <label class="col-sm-2 control-label">名称</label>
             <div class="col-sm-4">
-                <input type="text" th:value="${product?.name}" class="form-control" id="inputName" placeholder="请输入商品名称">
+                <input type="text" th:value="${product?.name}" class="form-control" id="inputName"
+                       placeholder="请输入商品名称">
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-2 control-label">价格</label>
             <div class="col-sm-4">
-                <input type="text" th:value="${product?.price}" class="form-control" id="inputPrice" placeholder="请输入价格">
+                <input type="text" th:value="${product?.price}" class="form-control" id="inputPrice"
+                       placeholder="请输入价格">
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-2 control-label">简介</label>
             <div class="col-sm-4">
-                <textarea th:value="${product?.introduction}" th:text="${product?.introduction}" class="form-control" rows="4" id="inputIntroduction"
+                <textarea th:value="${product?.introduction}" th:text="${product?.introduction}" class="form-control"
+                          rows="4" id="inputIntroduction"
                           placeholder="请输入商品简介"></textarea>
             </div>
         </div>
@@ -80,7 +83,7 @@
             contentType: 'application/json',
             url: '/emall/product/save',
             data: JSON.stringify({
-                id:$('#productId').val(),
+                id: $('#productId').val(),
                 productCategoryId: $('#inputProductCategory').val(),
                 name: $('#inputName').val(),
                 price: $('#inputPrice').val(),
@@ -91,6 +94,7 @@
                 pictures = [];
                 if (data.code == "1000") {
                     alert('发布成功');
+                    window.location.href = '/emall/product/release/list';
                 }
                 else if (data.code == "500") {
                     alert('发布失败');
@@ -112,8 +116,8 @@
         var productCategory = $('#inputProductCategory');
         $.each(data, function (i, category) {
             var categoryContent = $('<option value="' + category.id + '">' + category.category + '</option>');
-            if(product != null && product.productCategoryId == category.id){
-                categoryContent.attr('selected','selected');
+            if (product != null && product.productCategoryId == category.id) {
+                categoryContent.attr('selected', 'selected');
             }
             productCategory.append(categoryContent);
         })

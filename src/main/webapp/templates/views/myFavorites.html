@@ -9,11 +9,19 @@
     var pager = /*[[${pager}]]*/{};
 
     $(document).ready(function () {
-        renderFavorites();
+        renderFavorites(favorites);
         renderPager(pager);
+        $('#buttonPrePage').bind('click',function () {
+            prePage(loadFavorites);
+        });
+        $('#buttonNextPage').bind('click',function () {
+            nextPage(loadFavorites);
+        });
     })
 
-    function renderFavorites() {
+    function renderFavorites(favorites) {
+        var items = $('.items');
+        items.empty();
         $.each(favorites, function (i, favorite) {
             var image = "";
             var product = favorite.product;
@@ -22,7 +30,6 @@
                     image = picture.picture;
                 }
             });
-            var items = $('.items');
             var item = $('<div class="media"></div>');
 
             var picture = $('<div class="media-left">\n' +
@@ -35,7 +42,7 @@
                 '        <a class="media-heading" href="/emall/product/detail?id=' + product.id + '">' + product.name + '</a>\n' +
                 '        <p>￥' + product.price + '</p>\n' +
                 '        <p>' + product.introduction + '</p>\n' +
-                '        <p>' + favorite.status + '</p>\n' +
+                '        <p>' + product.status + '</p>\n' +
                 '    </div>');
 
 
@@ -45,6 +52,23 @@
             item.append(info);
             items.append(item);
         });
+    }
+
+    function loadFavorites() {
+        $.ajax({
+            type:'post',
+            url:'/emall/product/favorites/search',
+            data:{
+                searchInfo:JSON.stringify({
+
+                }),
+                page:$('#nowPage').val()
+            },
+            success:function (data) {
+                renderFavorites(data.favorites);
+                renderPager(data.pager);
+            }
+        })
     }
 
     function cancelFavorites(id) {
@@ -58,7 +82,7 @@
             success: function (data) {
                 if (data.code == '1000') {
                     alert('删除成功');
-                    window.location.href = '/emall/product/favorites/list';
+                    loadFavorites();
                 }
             }
         })

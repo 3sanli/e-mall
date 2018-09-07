@@ -1,12 +1,15 @@
 package top.showtan.controller;
 
+import com.alibaba.fastjson.JSON;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 import top.showtan.model.BuyModel;
 import top.showtan.model.ProductModel;
 import top.showtan.model.SoldModel;
@@ -18,9 +21,12 @@ import top.showtan.service.SoldService;
 import top.showtan.service.UserService;
 import top.showtan.util.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 @Controller
-@RequestMapping("/product/swap")
+@RequestMapping("/product/buy")
 public class BuyController {
     @Autowired
     private BuyService buyService;
@@ -33,6 +39,25 @@ public class BuyController {
 
     @Autowired
     private SoldService soldService;
+
+    @RequestMapping("/search")
+    @ResponseBody
+    public Map<String, Object> search(@RequestParam(value = "searchInfo", required = false) String searchInfo,
+                                      @RequestParam(value = "page", defaultValue = AppCondition.INIT_PAGE) Long page,
+                                      @RequestParam(value = "pageSize", defaultValue = AppCondition.INIT_PAGESIZE) Long pageSize) {
+        Map<String, Object> result = new HashMap<>();
+        BuyCriteria criteria = new BuyCriteria();
+        if (!StringUtils.isEmpty(searchInfo)) {
+            criteria = JSON.parseObject(searchInfo, BuyCriteria.class);
+        }
+        //TODO
+        criteria.setCreatorId(1);
+        PageModel<BuyModel> pageModel = buyService.search(criteria, page, pageSize);
+        Pager pager = new Pager(pageModel.getTotalCount(), page, pageSize);
+        result.put("buys", pageModel.getData());
+        result.put("pager", pager);
+        return result;
+    }
 
     @RequestMapping("/save")
     @ResponseBody
@@ -67,10 +92,10 @@ public class BuyController {
 
     @RequestMapping("/cancel")
     @ResponseBody
-    public Response cancelBuy(@RequestParam(value = "id",required = true) Integer id) {
+    public Response cancelBuy(@RequestParam(value = "id", required = true) Integer id) {
         //先判断数据库中是否存在本人购买记录
         BuyModel buy = buyService.getById(id);
-        if(buy == null){
+        if (buy == null) {
             return Response.SUCCESS();
         }
 
@@ -86,10 +111,10 @@ public class BuyController {
 
     @RequestMapping("/delete")
     @ResponseBody
-    public Response deleteBuy(@RequestParam(value = "id",required = true) Integer id) {
+    public Response deleteBuy(@RequestParam(value = "id", required = true) Integer id) {
         //先判断数据库中是否存在本人购买记录
         BuyModel buy = buyService.getById(id);
-        if(buy == null){
+        if (buy == null) {
             return Response.SUCCESS();
         }
         buyService.delete(buy);
@@ -98,10 +123,10 @@ public class BuyController {
 
     @RequestMapping("/complete")
     @ResponseBody
-    public Response complete(@RequestParam(value = "id",required = true) Integer id) {
+    public Response complete(@RequestParam(value = "id", required = true) Integer id) {
         //先判断数据库中是否存在本人购买记录
         BuyModel buy = buyService.getById(id);
-        if(buy == null){
+        if (buy == null) {
             return Response.ERROR();
         }
         //完成购买，改变购买记录状态为"COMPLETE"

@@ -68,6 +68,8 @@ public class FavoritesController {
         if (!StringUtils.isEmpty(searchInfo)) {
             criteria = JSON.parseObject(searchInfo, FavoritesCriteria.class);
         }
+        //TODO
+        criteria.setCreatorId(1);
         PageModel<FavoritesModel> pageModel = favoritesService.search(criteria, page, pageSize);
         Pager pager = new Pager(pageModel.getTotalCount(), page, pageSize);
         result.put("favorites", pageModel.getData());

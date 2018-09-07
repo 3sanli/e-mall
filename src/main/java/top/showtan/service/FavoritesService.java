@@ -16,6 +16,7 @@ import top.showtan.model.criteria.FavoritesCriteria;
 import top.showtan.model.criteria.ProductCriteria;
 import top.showtan.util.BaseConvert;
 import top.showtan.util.PageModel;
+import top.showtan.util.PageUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +70,8 @@ public class FavoritesService {
      */
     public PageModel<FavoritesModel> search(FavoritesCriteria criteria, Long page, Long pageSize) {
         PageModel<FavoritesModel> result = new PageModel<>();
-        List<Favorites> favorites = favoritesMapper.search(criteria, page, pageSize);
+        PageUtil pageUtil = new PageUtil(page, pageSize);
+        List<Favorites> favorites = favoritesMapper.search(criteria, pageUtil.getSkip(), pageUtil.getTake());
         Long totalCount = favoritesMapper.countAll(criteria);
         //查询所有收藏的商品详情
         List<ProductCriteria> criterias = getProductCriteriaListWithFavoritesList(favorites);

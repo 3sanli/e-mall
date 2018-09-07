@@ -9,11 +9,19 @@
     var pager = /*[[${pager}]]*/{};
 
     $(document).ready(function () {
-        renderBuys();
+        renderSolds(solds);
         renderPager(pager);
+        $('#buttonPrePage').bind('click',function () {
+            prePage(loadSolds);
+        });
+        $('#buttonNextPage').bind('click',function () {
+            nextPage(loadSolds);
+        });
     })
 
-    function renderBuys() {
+    function renderSolds(solds) {
+        var items = $('.items');
+        items.empty();
         $.each(solds, function (i, sold) {
             var image = "";
             var product = sold.product;
@@ -22,7 +30,6 @@
                     image = picture.picture;
                 }
             });
-            var items = $('.items');
             var item = $('<div class="media"></div>');
 
             var picture = $('<div class="media-left">\n' +
@@ -47,6 +54,23 @@
         });
     }
 
+    function loadSolds() {
+        $.ajax({
+            type:'post',
+            url:'/emall/product/sold/search',
+            data:{
+                searchInfo:JSON.stringify({
+
+                }),
+                page:$('#nowPage').val()
+            },
+            success:function (data) {
+                renderSolds(data.solds);
+                renderPager(data.pager);
+            }
+        })
+    }
+
     function deleteSold(id) {
         $.ajax({
             type: 'post',
@@ -57,7 +81,7 @@
             success: function (data) {
                 if (data.code == '1000') {
                     alert('删除成功');
-                    window.location.href = '/emall/product/sold/list';
+                    loadSolds();
                 }
             }
         })

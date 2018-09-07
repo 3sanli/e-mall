@@ -14,6 +14,7 @@ import top.showtan.model.ProductModel;
 import top.showtan.model.criteria.ProductCriteria;
 import top.showtan.util.BaseConvert;
 import top.showtan.util.PageModel;
+import top.showtan.util.PageUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +40,8 @@ public class ProductService {
      */
     public PageModel<ProductModel> search(ProductCriteria criteria, Long page, Long pageSize) {
         PageModel<ProductModel> result = new PageModel<>();
-        List<Product> products = productMapper.search(criteria, page, pageSize);
+        PageUtil pageUtil = new PageUtil(page, pageSize);
+        List<Product> products = productMapper.search(criteria, pageUtil.getSkip(), pageUtil.getTake());
         Long totalCount = productMapper.countAll(criteria);
 
         List<ProductModel> productModels = BaseConvert.convertProductListToProductModelList(products);
@@ -60,7 +62,7 @@ public class ProductService {
      * @return
      */
     public void save(ProductModel product) {
-        sqlSessionTemplate.insert("top.showtan.dao.ProductMapper.save",product);
+        sqlSessionTemplate.insert("top.showtan.dao.ProductMapper.save", product);
         productPictureMapper.save(createProductPictureList(product));
     }
 
@@ -111,13 +113,13 @@ public class ProductService {
      * @return
      */
     public ProductModel getById(ProductCriteria criteria) {
-        if(criteria.getId() == null){
+        if (criteria.getId() == null) {
             return null;
         }
         Product product = productMapper.getById(criteria);
         List<ProductPicture> productPictures = productPictureMapper.getByProductId(criteria.getId());
         ProductModel productModel = new ProductModel();
-        BeanUtils.copyProperties(product,productModel);
+        BeanUtils.copyProperties(product, productModel);
         productModel.setPictures(productPictures);
         return productModel;
     }

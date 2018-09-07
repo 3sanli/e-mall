@@ -50,11 +50,10 @@ public class ProductController {
         ProductCriteria criteria = new ProductCriteria();
         BeanUtils.copyProperties(product, criteria);
         ProductModel productModel = productService.getById(criteria);
-        if(productModel != null){
-            if (!"RELEASING".equals(productModel.getStatus())){
+        if (productModel != null) {
+            if (!"RELEASING".equals(productModel.getStatus())) {
                 return Response.ERROR("该商品不可更改信息");
-            }
-            else{
+            } else {
                 productService.modify(product);
                 return Response.SUCCESS();
             }
@@ -68,11 +67,11 @@ public class ProductController {
 
     @RequestMapping("/delete")
     @ResponseBody
-    public Response delete(@RequestBody ProductModel product){
+    public Response delete(@RequestBody ProductModel product) {
         ProductCriteria criteria = new ProductCriteria();
-        BeanUtils.copyProperties(product,criteria);
+        BeanUtils.copyProperties(product, criteria);
         ProductModel productModel = productService.getById(criteria);
-        if(productModel == null){
+        if (productModel == null) {
             return Response.SUCCESS();
         }
         productService.delete(product);

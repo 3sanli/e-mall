@@ -1,7 +1,7 @@
 <nav aria-label="...">
     <ul class="pager">
-        <li><a id="buttonPrePage" href="#">上一页</a></li>
-        <li><a href="#" id="nowPage" th:value="0">1</a></li>
+        <li><a id="buttonPrePage" class="btn btn-default disabled" href="#">上一页</a></li>
+        <li><a href="#" class="btn btn-default btn-lg disabled" id="nowPage" th:value="1">1</a></li>
         <li><a id="buttonNextPage" href="#">下一页</a></li>
     </ul>
 </nav>
@@ -11,15 +11,27 @@
         var nowPage = $('#nowPage');
         nowPage.text(pager.currentPage);
         nowPage.val(pager.currentPage);
+        $('#buttonPrePage').attr('class','');
+        $('#buttonNextPage').attr('class','');
+        if(pager.currentPage == 1){
+            $('#buttonPrePage').attr('class','btn btn-default disabled');
+        }
+        if(pager.currentPage == pager.totalPage){
+            $('#buttonNextPage').attr('class','btn btn-default disabled');
+        }
+        if(pager.totalPage == 0){
+            $('#buttonPrePage').attr('class','btn btn-default disabled');
+            $('#buttonNextPage').attr('class','btn btn-default disabled');
+        }
     }
 
     function prePage(callBack) {
-        $('#nowPage').val($('#nowPage').val() - 1);
+        $('#nowPage').val(parseInt($('#nowPage').val()) - 1);
         callBack();
     }
 
     function nextPage(callBack) {
-        $('#nowPage').val($('#nowPage').val() + 1);
+        $('#nowPage').val(parseInt($('#nowPage').val()) + 1);
         callBack();
     }
 </script>

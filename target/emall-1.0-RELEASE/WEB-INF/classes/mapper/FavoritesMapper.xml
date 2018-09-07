@@ -53,8 +53,8 @@
                 creatorId = #{criteria.creatorId}
             </if>
         </where>
-        <if test="page &gt;= 0 and pageSize &gt;= 0">
-            LIMIT #{page},#{pageSize}
+        <if test="skip &gt;= 0 and take &gt;= 0">
+            LIMIT #{skip},#{take}
         </if>
     </select>
 </mapper>

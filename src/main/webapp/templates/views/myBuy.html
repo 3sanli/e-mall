@@ -9,11 +9,19 @@
     var pager = /*[[${pager}]]*/{};
 
     $(document).ready(function () {
-        renderBuys();
+        renderBuys(buys);
         renderPager(pager);
+        $('#buttonPrePage').bind('click',function () {
+            prePage(loadBuys);
+        });
+        $('#buttonNextPage').bind('click',function () {
+            nextPage(loadBuys);
+        });
     })
 
-    function renderBuys() {
+    function renderBuys(buys) {
+        var items = $('.items');
+        items.empty();
         $.each(buys, function (i, buy) {
             var image = "";
             var product = buy.product;
@@ -22,7 +30,6 @@
                     image = picture.picture;
                 }
             });
-            var items = $('.items');
             var item = $('<div class="media"></div>');
 
             var picture = $('<div class="media-left">\n' +
@@ -55,6 +62,23 @@
         });
     }
 
+    function loadBuys() {
+        $.ajax({
+            type:'post',
+            url:'/emall/product/buy/search',
+            data:{
+                searchInfo:JSON.stringify({
+
+                }),
+                page:$('#nowPage').val()
+            },
+            success:function (data) {
+                renderBuys(data.buys);
+                renderPager(data.pager);
+            }
+        })
+    }
+    
     function goToComment(productId) {
         window.location.href = "/emall/product/comment?productId=" + productId;
     }
@@ -62,14 +86,14 @@
     function cancelBuy(id) {
         $.ajax({
             type: 'post',
-            url: '/emall/product/swap/cancel',
+            url: '/emall/product/buy/cancel',
             data: {
                 id: id
             },
             success: function (data) {
                 if (data.code == '1000') {
                     alert('取消成功');
-                    window.location.href = '/emall/product/buy/list';
+                    loadBuys();
                 }
             }
         })
@@ -78,14 +102,14 @@
     function completeBuy(id) {
         $.ajax({
             type: 'post',
-            url: '/emall/product/swap/complete',
+            url: '/emall/product/buy/complete',
             data: {
                 id: id
             },
             success: function (data) {
                 if (data.code == '1000') {
                     alert('收货成功');
-                    window.location.href = '/emall/product/buy/list';
+                    loadBuys();
                 }
             }
         })
@@ -94,14 +118,14 @@
     function deleteBuy(id) {
         $.ajax({
             type: 'post',
-            url: '/emall/product/swap/delete',
+            url: '/emall/product/buy/delete',
             data: {
                 id: id
             },
             success: function (data) {
                 if (data.code == '1000') {
                     alert('删除成功');
-                    window.location.href = '/emall/product/buy/list';
+                    loadBuys();
                 }
             }
         })

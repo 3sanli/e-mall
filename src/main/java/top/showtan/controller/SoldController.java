@@ -36,6 +36,8 @@ public class SoldController {
         if (!StringUtils.isEmpty(searchInfo)) {
             criteria = JSON.parseObject(searchInfo, SoldCriteria.class);
         }
+        //TODO
+        criteria.setCreatorId(1);
         PageModel<SoldModel> pageModel = soldService.search(criteria, page, pageSize);
         Pager pager = new Pager(pageModel.getTotalCount(), page, pageSize);
         result.put("solds", pageModel.getData());

@@ -14,13 +14,13 @@ public interface ProductMapper {
      * 根据查询条件动态查询商品
      *
      * @param criteria
-     * @param page
-     * @param pageSize
+     * @param skip
+     * @param take
      * @return
      */
     List<Product> search(@Param("criteria") ProductCriteria criteria,
-                         @Param("page") Long page,
-                         @Param("pageSize") Long pageSize);
+                         @Param("skip") Long skip,
+                         @Param("take") Long take);
 
     /**
      * 保存商品信息及返回商品id

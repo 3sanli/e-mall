@@ -46,6 +46,12 @@
     $(document).ready(function () {
         renderProducts(products);
         renderPager(pager);
+        $('#buttonPrePage').bind('click',function () {
+            prePage(loadProducts);
+        });
+        $('#buttonNextPage').bind('click',function () {
+            nextPage(loadProducts);
+        });
     });
 
     function loadProducts() {
@@ -60,7 +66,7 @@
                     priceCriteria: '',
                     creditCriteria: ''
                 }),
-                page: $('nowPage').val()
+                page: $('#nowPage').val()
             },
             success: function (data) {
                 renderProducts(data.products);

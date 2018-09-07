@@ -43,13 +43,13 @@ public interface BuyMapper {
      * 根据条件查询购买记录集
      *
      * @param criteria
-     * @param page
-     * @param pageSize
+     * @param skip
+     * @param take
      * @return
      */
     List<Buy> search(@Param("criteria") BuyCriteria criteria,
-                     @Param("page") Long page,
-                     @Param("pageSize") Long pageSize);
+                     @Param("skip") Long skip,
+                     @Param("take") Long take);
 
     /**
      * 查询总购买记录数

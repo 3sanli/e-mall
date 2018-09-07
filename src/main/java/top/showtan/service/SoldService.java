@@ -16,6 +16,7 @@ import top.showtan.model.criteria.ProductCriteria;
 import top.showtan.model.criteria.SoldCriteria;
 import top.showtan.util.BaseConvert;
 import top.showtan.util.PageModel;
+import top.showtan.util.PageUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +58,8 @@ public class SoldService {
      */
     public PageModel<SoldModel> search(SoldCriteria criteria, Long page, Long pageSize) {
         PageModel<SoldModel> result = new PageModel<>();
-        List<Sold> solds = soldMapper.search(criteria, page, pageSize);
+        PageUtil pageUtil = new PageUtil(page,pageSize);
+        List<Sold> solds = soldMapper.search(criteria, pageUtil.getSkip(), pageUtil.getTake());
         Long totalCount = soldMapper.countAll(criteria);
         //查询所有卖出记录
         List<ProductCriteria> criterias = getProductCriteriaListWithSoldList(solds);
