@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import top.showtan.model.CommentModel;
 import top.showtan.model.criteria.CommentCriteria;
 import top.showtan.service.CommentService;
+import top.showtan.service.UserService;
 import top.showtan.util.Response;
 
 @Controller
@@ -17,12 +18,14 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
+    @Autowired
+    private UserService userService;
+
     @RequestMapping("/save")
     @ResponseBody
     public Response save(@RequestBody CommentModel comment){
-        //TODO
-        comment.setCreatorId(1);
-        comment.setCreatorName("user01");
+        comment.setCreatorId(userService.getCurrentUser().getId());
+        comment.setCreatorName(userService.getCurrentUser().getNickName());
         CommentCriteria criteria = new CommentCriteria();
         BeanUtils.copyProperties(comment, criteria);
         Long count = commentService.countComment(criteria);

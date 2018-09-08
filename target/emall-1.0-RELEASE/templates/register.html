@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script th:src="@{/static/scripts/jquery-1.10.2.min.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/bootstrap/css/bootstrap.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/static/bootstrap/css/bootstrap-theme.css}">
+    <script th:src="@{/static/bootstrap/js/bootstrap.js}"></script>
+    <link rel="stylesheet" th:href="@{/static/kindeditor/themes/default/default.css}"/>
+    <link rel="stylesheet" th:href="@{/static/kindeditor/plugins/code/prettify.css}"/>
+    <script charset="utf-8" th:src="@{/static/kindeditor/kindeditor-all.js}"></script>
+    <script charset="utf-8" th:src="@{/static/kindeditor/lang/zh-CN.js}"></script>
+    <script charset="utf-8" th:src="@{/static/kindeditor/plugins/code/prettify.js}"></script>
+    <link th:href="@{/static/H-ui/lib/Hui-iconfont/1.0.8/iconfont.css}" rel="stylesheet" type="text/css"/>
+    <title>register</title>
+</head>
+<body>
+<div style="width: 900px;margin: 100px auto auto auto;">
+    <div class="jumbotron" style="width: 700px;background-color: #fff;float:none;margin: auto;">
+        <h1>Hello, friend!</h1>
+        <p>Here is the special event of sanli, you can visit my
+            <a href="https://github.com/3sanli">github</a>
+            to browse my project, or you can join me and look forward to your arrival.</p>
+    </div>
+    <div class="panel panel-default" style="float:none;margin: auto;">
+        <div class="panel-body">
+            <div class="col-lg-9" style="float:none;margin: auto;">
+                <div class="input-group">
+                <span class="input-group-addon" id="basic-addon2">
+                    <i class="Hui-iconfont Hui-iconfont-phone-android"></i>
+                </span>
+                    <input type="text" id="userMobile" class="form-control" placeholder="mobile"
+                           aria-describedby="basic-addon2">
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-9" style="float:none;margin: auto;">
+                <div class="input-group">
+                <span class="input-group-addon" id="basic-addon3">
+                    <i class="Hui-iconfont Hui-iconfont-key"></i>
+                </span>
+                    <input type="password" id="userPassword" class="form-control" placeholder="password"
+                           aria-describedby="basic-addon3">
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-9" style="float:none;margin: auto;">
+                <div class="input-group">
+                <span class="input-group-addon" id="basic-addon4">
+                    <i class="Hui-iconfont Hui-iconfont-key"></i>
+                </span>
+                    <input type="password" id="userPasswordConfirm" class="form-control"
+                           placeholder="confirm your password"
+                           aria-describedby="basic-addon4">
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-4" style="float:right;">
+                <button type="button" class="btn btn-primary" onclick="register()">
+                    Sign up
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    var mobile = $('#userMobile');
+    var password = $('#userPassword');
+    var passwordConfirm = $('#userPasswordConfirm');
+
+    $(document).ready(function () {
+        password.bind('blur', function () {
+            confirmPassword();
+        });
+        passwordConfirm.bind('blur', function () {
+            confirmPassword();
+        });
+        mobile.bind('blur', function () {
+            loadUser();
+        });
+        mobile.bind('focus', function () {
+            mobile.css({
+                'border-color': '#ccc'
+            });
+        });
+        password.bind('focus', function () {
+            password.css({
+                'border-color': '#ccc'
+            });
+        });
+        passwordConfirm.bind('focus', function () {
+            passwordConfirm.css({
+                'border-color': '#ccc'
+            });
+            password.css({
+                'border-color': '#ccc'
+            });
+        });
+    })
+
+    function register() {
+        if (loadUser() && confirmPassword()) {
+            registerUser();
+        }
+    }
+
+    function loadUser() {
+        var result = false;
+        if (validateInput(mobile.val())) {
+            $.ajax({
+                type: 'post',
+                contentType: 'application/json',
+                async : false,
+                data: JSON.stringify({
+                    mobile: mobile.val()
+                }),
+                url: '/emall/user/search',
+                success: function (data) {
+                    if (data.message == '000') {
+                        mobile.css({
+                            'border-color': 'red'
+                        });
+                        result = false;
+                    }
+                    else {
+                        result = true;
+                    }
+                }
+            });
+        }
+        else {
+            result = false;
+        }
+        return result;
+    }
+
+    function registerUser() {
+        $.ajax({
+            type: 'post',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                nickName: mobile.val(),
+                mobile: mobile.val(),
+                password: password.val()
+            }),
+            url: '/emall/user/register',
+            success: function (data) {
+                if (data.code == '1000') {
+                    alert('注册成功');
+                    window.location.href = '/emall/portal/login';
+                }
+            }
+        })
+    }
+
+    function confirmPassword() {
+        if (validateInput(password.val()) && validateInput(passwordConfirm.val())) {
+            if (password.val() != passwordConfirm.val()) {
+                passwordConfirm.css({
+                    'border-color': 'red'
+                });
+                password.css({
+                    'border-color': 'red'
+                });
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    function validateInput(data) {
+        if ($.trim(data) == null || $.trim(data) == '') {
+            return false;
+        }
+        return true;
+    }
+</script>
+</div>
+</body>
+</html>

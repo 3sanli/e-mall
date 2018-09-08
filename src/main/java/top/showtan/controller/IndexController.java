@@ -34,6 +34,9 @@ public class IndexController {
     @Autowired
     private SoldService soldService;
 
+    @Autowired
+    private UserService userService;
+
 
     @RequestMapping({"/", "/index"})
     public ModelAndView index() {
@@ -64,8 +67,7 @@ public class IndexController {
                                       @RequestParam(value = "pageSize", defaultValue = AppCondition.INIT_PAGESIZE) Long pageSize) {
         ModelAndView mv = ModelAndViewUtil.CreateModelAndView("views/myFavorites");
         FavoritesCriteria criteria = new FavoritesCriteria();
-        //TODO
-        criteria.setCreatorId(1);
+        criteria.setCreatorId(userService.getCurrentUser().getId());
         PageModel<FavoritesModel> pageModel = favoritesService.search(criteria, page, pageSize);
         Pager pager = new Pager(pageModel.getTotalCount(), page, pageSize);
         mv.addObject("favorites", pageModel.getData());
@@ -81,8 +83,7 @@ public class IndexController {
         criteria.setId(id);
         FavoritesCriteria favoritesCriteria = new FavoritesCriteria();
         favoritesCriteria.setProductId(id);
-        //TODO
-        favoritesCriteria.setCreatorId(1);
+        favoritesCriteria.setCreatorId(userService.getCurrentUser().getId());
         mv.addObject("product", productService.getById(criteria));
         mv.addObject("isFavorites",(favoritesService.countFavoriets(favoritesCriteria)==0)?false:true);
         return mv;
@@ -105,8 +106,7 @@ public class IndexController {
                                     @RequestParam(value = "pageSize", defaultValue = AppCondition.INIT_PAGESIZE) Long pageSize) {
         ModelAndView mv = ModelAndViewUtil.CreateModelAndView("views/releaseProductList");
         ProductCriteria criteria = new ProductCriteria();
-        //TODO
-        criteria.setCreatorId(1);
+        criteria.setCreatorId(userService.getCurrentUser().getId());
         PageModel<ProductModel> pageModel = productService.search(criteria, page, pageSize);
         Pager pager = new Pager(pageModel.getTotalCount(), page, pageSize);
         mv.addObject("products", pageModel.getData());
@@ -120,8 +120,7 @@ public class IndexController {
                                   @RequestParam(value = "pageSize", defaultValue = AppCondition.INIT_PAGESIZE) Long pageSize) {
         ModelAndView mv = ModelAndViewUtil.CreateModelAndView("views/myBuy");
         BuyCriteria criteria = new BuyCriteria();
-        //TODO
-        criteria.setCreatorId(1);
+        criteria.setCreatorId(userService.getCurrentUser().getId());
         PageModel<BuyModel> pageModel = buyService.search(criteria, page, pageSize);
         Pager pager = new Pager(pageModel.getTotalCount(), page, pageSize);
         mv.addObject("buys", pageModel.getData());
@@ -135,8 +134,7 @@ public class IndexController {
                                    @RequestParam(value = "pageSize", defaultValue = AppCondition.INIT_PAGESIZE) Long pageSize) {
         ModelAndView mv = ModelAndViewUtil.CreateModelAndView("views/mySold");
         SoldCriteria criteria = new SoldCriteria();
-        //TODO
-        criteria.setCreatorId(1);
+        criteria.setCreatorId(userService.getCurrentUser().getId());
         PageModel<SoldModel> pageModel = soldService.search(criteria, page, pageSize);
         Pager pager = new Pager(pageModel.getTotalCount(), page, pageSize);
         mv.addObject("solds", pageModel.getData());
@@ -155,6 +153,12 @@ public class IndexController {
     @RequestMapping("/portal/login")
     @ResponseBody
     public ModelAndView login() {
-        return ModelAndViewUtil.CreateModelAndView("views/login");
+        return new ModelAndView("login");
+    }
+
+    @RequestMapping("/portal/register")
+    @ResponseBody
+    public ModelAndView register() {
+        return new ModelAndView("register");
     }
 }

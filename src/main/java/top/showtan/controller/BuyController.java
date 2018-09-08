@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 import top.showtan.model.BuyModel;
 import top.showtan.model.ProductModel;
 import top.showtan.model.SoldModel;
@@ -50,8 +49,7 @@ public class BuyController {
         if (!StringUtils.isEmpty(searchInfo)) {
             criteria = JSON.parseObject(searchInfo, BuyCriteria.class);
         }
-        //TODO
-        criteria.setCreatorId(1);
+        criteria.setCreatorId(userService.getCurrentUser().getId());
         PageModel<BuyModel> pageModel = buyService.search(criteria, page, pageSize);
         Pager pager = new Pager(pageModel.getTotalCount(), page, pageSize);
         result.put("buys", pageModel.getData());
@@ -62,9 +60,8 @@ public class BuyController {
     @RequestMapping("/save")
     @ResponseBody
     public Response save(@RequestBody BuyModel buy) {
-        //--------TODO MODIFY THE CREATORID AND CREATORNAME
-        buy.setCreatorId(1);
-        buy.setCreatorName("user01");
+        buy.setCreatorId(userService.getCurrentUser().getId());
+        buy.setCreatorName(userService.getCurrentUser().getNickName());
 
         //先判断该商品有没有在同一时间被人购买
         ProductCriteria productCriteria = new ProductCriteria();

@@ -2,10 +2,27 @@ package top.showtan.dao;
 
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+import top.showtan.entity.User;
+import top.showtan.model.UserModel;
 import top.showtan.model.criteria.UserCriteria;
 
 @Repository
 public interface UserMapper {
+    /**
+     * 根据条件查询指定用户对象
+     *
+     * @param criteria
+     * @return
+     */
+    User search(UserCriteria criteria);
+
+    /**
+     * 持久化新用户信息到数据库中
+     *
+     * @param user
+     */
+    void save(UserModel user);
+
     /**
      * 统计用户钱财
      *
@@ -25,6 +42,7 @@ public interface UserMapper {
 
     /**
      * 交易完成平台转账以及交易未成功完成平台退款
+     *
      * @param userId
      * @param money
      */

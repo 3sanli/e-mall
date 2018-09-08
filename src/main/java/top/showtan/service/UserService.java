@@ -1,13 +1,21 @@
 package top.showtan.service;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import top.showtan.dao.ProductMapper;
 import top.showtan.dao.UserMapper;
 import top.showtan.entity.Product;
+import top.showtan.entity.User;
 import top.showtan.model.BuyModel;
+import top.showtan.model.UserModel;
 import top.showtan.model.criteria.ProductCriteria;
 import top.showtan.model.criteria.UserCriteria;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 @Service
 public class UserService {
@@ -16,6 +24,43 @@ public class UserService {
 
     @Autowired
     private ProductMapper productMapper;
+
+    /**
+     * 获取本次登录对象信息
+     *
+     * @return
+     */
+    public UserModel getCurrentUser() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        HttpSession session = request.getSession();
+        UserModel user = (UserModel) session.getAttribute("user");
+        return user;
+    }
+
+    /**
+     * 根据条件查询指定用户（用户唯一用户名/用户手机号）
+     *
+     * @param criteria
+     * @return
+     */
+    public UserModel search(UserCriteria criteria) {
+        User user = userMapper.search(criteria);
+        if (user == null) {
+            return null;
+        }
+        UserModel userModel = new UserModel();
+        BeanUtils.copyProperties(user, userModel);
+        return userModel;
+    }
+
+    /**
+     * 用户成功注册，将用户信息持久化到数据库中
+     *
+     * @param user
+     */
+    public void save(UserModel user) {
+        userMapper.save(user);
+    }
 
     /**
      * 用户购买商品后扣除相关钱财
@@ -49,7 +94,7 @@ public class UserService {
         return userMapper.countMoney(criteria);
     }
 
-    public void addMoney(Integer userId,Long money) {
+    public void addMoney(Integer userId, Long money) {
         userMapper.addMoney(userId, money);
     }
 }

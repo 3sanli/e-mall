@@ -22,6 +22,10 @@ public class UserModel {
      */
     private String password;
     /**
+     * 密码确认
+     */
+    private String passwordConfirm;
+    /**
      * 用户权限
      */
     private String permission;
@@ -34,7 +38,7 @@ public class UserModel {
      */
     private Integer credit;
 
-    private List<UserPicture> pictures;
+    private UserPicture picture;
 
     public Integer getId() {
         return id;
@@ -68,6 +72,14 @@ public class UserModel {
         this.password = password;
     }
 
+    public String getPasswordConfirm() {
+        return passwordConfirm;
+    }
+
+    public void setPasswordConfirm(String passwordConfirm) {
+        this.passwordConfirm = passwordConfirm;
+    }
+
     public String getPermission() {
         return permission;
     }
@@ -92,11 +104,11 @@ public class UserModel {
         this.credit = credit;
     }
 
-    public List<UserPicture> getPictures() {
-        return pictures;
+    public UserPicture getPicture() {
+        return picture;
     }
 
-    public void setPictures(List<UserPicture> pictures) {
-        this.pictures = pictures;
+    public void setPicture(UserPicture picture) {
+        this.picture = picture;
     }
 }

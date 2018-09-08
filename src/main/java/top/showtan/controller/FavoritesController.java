@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import top.showtan.model.FavoritesModel;
 import top.showtan.model.criteria.FavoritesCriteria;
 import top.showtan.service.FavoritesService;
+import top.showtan.service.UserService;
 import top.showtan.util.AppCondition;
 import top.showtan.util.PageModel;
 import top.showtan.util.Pager;
@@ -27,12 +28,14 @@ public class FavoritesController {
     @Autowired
     private FavoritesService favoritesService;
 
+    @Autowired
+    private UserService userService;
+
     @RequestMapping("/save")
     @ResponseBody
     public Response favorites(@RequestBody FavoritesModel favorite) {
-        //TODO
-        favorite.setCreatorId(1);
-        favorite.setCreatorName("user01");
+        favorite.setCreatorId(userService.getCurrentUser().getId());
+        favorite.setCreatorName(userService.getCurrentUser().getNickName());
         FavoritesCriteria criteria = new FavoritesCriteria();
         BeanUtils.copyProperties(favorite, criteria);
         Long count = favoritesService.countFavoriets(criteria);
@@ -46,8 +49,7 @@ public class FavoritesController {
     @RequestMapping("/delete")
     @ResponseBody
     public Response delete(@RequestBody FavoritesModel favorite) {
-        //TODO
-        favorite.setCreatorId(1);
+        favorite.setCreatorId(userService.getCurrentUser().getId());
         FavoritesCriteria criteria = new FavoritesCriteria();
         BeanUtils.copyProperties(favorite, criteria);
         Long count = favoritesService.countFavoriets(criteria);
@@ -68,8 +70,7 @@ public class FavoritesController {
         if (!StringUtils.isEmpty(searchInfo)) {
             criteria = JSON.parseObject(searchInfo, FavoritesCriteria.class);
         }
-        //TODO
-        criteria.setCreatorId(1);
+        criteria.setCreatorId(userService.getCurrentUser().getId());
         PageModel<FavoritesModel> pageModel = favoritesService.search(criteria, page, pageSize);
         Pager pager = new Pager(pageModel.getTotalCount(), page, pageSize);
         result.put("favorites", pageModel.getData());

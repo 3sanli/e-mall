@@ -85,7 +85,7 @@
                     image = pictureUrl.main ? pictureUrl.picture : "";
                 }
             });
-            var item = $('<div class="col-sm-4 col-md-2 thumbnail" style="margin-right: 10px;margin-left: 10px;"></div>');
+            var item = $('<div class="col-sm-4 col-md-3 thumbnail" style="margin-right: 10px;margin-left: 10px;"></div>');
             var item_image = $('<img style="width: 212px;height: 200px;" src="' + image + '" alt="' + product.name + '">');
             var item_info = $('<div class="caption"><h3>￥' + product.price + '</h3><a href="/emall/product/detail?id='+ product.id +'">' + product.introduction + '</a></div>')
             item.append(item_image);

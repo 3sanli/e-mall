@@ -33,9 +33,10 @@
 
     <select id="getByProductIds" resultMap="commentMap">
         SELECT * FROM Comment
-        WHERE productId in
-        <foreach collection="list" item="product" open="(" separator="," index="i" close=")">
-            #{product.id}
-        </foreach>
+        <where>
+            <foreach collection="list" item="product" open="productId in (" separator="," index="i" close=")">
+                #{product.id}
+            </foreach>
+        </where>
     </select>
 </mapper>

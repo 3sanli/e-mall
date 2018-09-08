@@ -9,17 +9,19 @@
     var pager = /*[[${pager}]]*/{};
 
     $(document).ready(function () {
-        renderReleases();
+        renderReleases(products);
         renderPager(pager);
         $('#buttonPrePage').bind('click',function () {
-            prePage(renderReleases);
+            prePage(loadReleases);
         });
         $('#buttonNextPage').bind('click',function () {
-            nextPage(renderReleases);
+            nextPage(loadReleases);
         });
     })
 
-    function renderReleases() {
+    function renderReleases(products) {
+        var items = $('.items');
+        items.empty();
         $.each(products, function (i, product) {
             var image = "";
             $.each(product.pictures, function (j, picture) {
@@ -27,7 +29,6 @@
                     image = picture.picture;
                 }
             });
-            var items = $('.items');
             var item = $('<div class="media"></div>');
 
             var picture = $('<div class="media-left">\n' +
@@ -54,6 +55,24 @@
         });
     }
 
+    function loadReleases() {
+        $.ajax({
+            type:'post',
+            url:'/emall/product/search',
+            data:{
+                searchInfo:JSON.stringify({
+                    //TODO
+                    creatorId:1
+                }),
+                page:$('#nowPage').val()
+            },
+            success:function (data) {
+                renderReleases(data.products);
+                renderPager(data.pager);
+            }
+        })
+    }
+    
     function cancelRelease(id) {
         $.ajax({
             type: 'post',
@@ -65,7 +84,7 @@
             success: function (data) {
                 if (data.code == '1000') {
                     alert('删除成功');
-                    window.location.href = '/emall/product/release/list';
+                    loadReleases();
                 }
             }
         })

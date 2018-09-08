@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import top.showtan.model.SoldModel;
 import top.showtan.model.criteria.SoldCriteria;
 import top.showtan.service.SoldService;
+import top.showtan.service.UserService;
 import top.showtan.util.AppCondition;
 import top.showtan.util.PageModel;
 import top.showtan.util.Pager;
@@ -26,6 +27,9 @@ public class SoldController {
     @Autowired
     private SoldService soldService;
 
+    @Autowired
+    private UserService userService;
+
     @RequestMapping("/search")
     @ResponseBody
     public Map<String, Object> search(@RequestParam(value = "searchInfo", required = false) String searchInfo,
@@ -36,8 +40,7 @@ public class SoldController {
         if (!StringUtils.isEmpty(searchInfo)) {
             criteria = JSON.parseObject(searchInfo, SoldCriteria.class);
         }
-        //TODO
-        criteria.setCreatorId(1);
+        criteria.setCreatorId(userService.getCurrentUser().getId());
         PageModel<SoldModel> pageModel = soldService.search(criteria, page, pageSize);
         Pager pager = new Pager(pageModel.getTotalCount(), page, pageSize);
         result.put("solds", pageModel.getData());

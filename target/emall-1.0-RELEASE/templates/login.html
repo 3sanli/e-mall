@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script th:src="@{/static/scripts/jquery-1.10.2.min.js}"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/bootstrap/css/bootstrap.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/static/bootstrap/css/bootstrap-theme.css}">
+    <script th:src="@{/static/bootstrap/js/bootstrap.js}"></script>
+    <link rel="stylesheet" th:href="@{/static/kindeditor/themes/default/default.css}"/>
+    <link rel="stylesheet" th:href="@{/static/kindeditor/plugins/code/prettify.css}"/>
+    <script charset="utf-8" th:src="@{/static/kindeditor/kindeditor-all.js}"></script>
+    <script charset="utf-8" th:src="@{/static/kindeditor/lang/zh-CN.js}"></script>
+    <script charset="utf-8" th:src="@{/static/kindeditor/plugins/code/prettify.js}"></script>
+    <link th:href="@{/static/H-ui/lib/Hui-iconfont/1.0.8/iconfont.css}" rel="stylesheet" type="text/css"/>
+    <title>login</title>
+</head>
+<body>
+<div style="width: 900px;margin: 100px auto auto auto;">
+    <div class="jumbotron" style="background-color: #fff;text-align: center;">
+        <h1>Hello, User!</h1>
+        <p>welcome to showtan.top</p>
+    </div>
+
+    <div class="panel panel-default" style="float:none;margin: auto;width: 450px;">
+        <div class="panel-body">
+            <div class="col-lg-9" style="float:none;margin:auto;text-align: center;">
+                <img id="userImage" style="width: 90px;" src="/emall/static/picture/default.png" class="img-circle">
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-9" style="float:none;margin: auto;">
+                <div class="input-group">
+                <span class="input-group-addon" id="basic-addon1">
+                    <i class="Hui-iconfont Hui-iconfont-user"></i>
+                </span>
+                    <input type="text" id="userNickName" class="form-control" placeholder="Username/phone"
+                           aria-describedby="basic-addon1">
+                </div>
+            </div>
+
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-9" style="float:none;margin: auto;">
+                <div class="input-group">
+                <span class="input-group-addon" id="basic-addon2">
+                    <i class="Hui-iconfont Hui-iconfont-suoding"></i>
+                </span>
+                    <input type="password" id="userPassword" class="form-control" placeholder="password"
+                           aria-describedby="basic-addon2">
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-5" style="float:right;">
+                <button type="button" id="buttonLogin" th:value="0" class="btn btn-success" onclick="login()">Sign In
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5" style="float: right;margin-top: 10px;">
+        <span>have no account?</span>
+        <a href="/emall/portal/register">join us</a>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    var nickName = $('#userNickName');
+    var password = $('#userPassword');
+    $(document).ready(function () {
+        nickName.bind('blur', function () {
+            loadUser();
+        });
+        password.bind('blur', function () {
+            loadUser();
+        });
+        nickName.bind('focus', function () {
+            nickName.css({
+                'border-color': '#ccc'
+            });
+        });
+        password.bind('focus', function () {
+            password.css({
+                'border-color': '#ccc'
+            });
+        });
+    })
+
+    function login() {
+        $('#buttonLogin').val(1);
+        loadUser();
+    }
+
+    function loadUser() {
+        if (validateInput(nickName.val()) && validateInput(password.val())) {
+            $.ajax({
+                type: 'post',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    nickName: nickName.val(),
+                    mobile: nickName.val(),
+                    password: password.val()
+                }),
+                url: '/emall/user/login',
+                success: function (data) {
+                    if (data.code == '1000' && $('#buttonLogin').val() == 1) {
+                        $('#buttonLogin').val(0);
+                        alert('登录成功');
+                        window.location.href = '/emall/portal/product/list';
+                    }
+                    else {
+                        if (data.message == '404') {
+                            $('#buttonLogin').val(0);
+                            nickName.css({
+                                'border-color': 'red'
+                            });
+                        }
+                        else if (data.message == '000') {
+                            $('#buttonLogin').val(0);
+                            password.css({
+                                'border-color': 'red'
+                            });
+                        }
+                    }
+                }
+            })
+        }
+    }
+
+    function loadUserPicture() {
+
+    }
+
+    function validateInput(data) {
+        if ($.trim(data) == null || $.trim(data) == '') {
+            return false;
+        }
+        return true;
+    }
+</script>
+</div>
+</body>
+</html>

@@ -13,6 +13,23 @@
 
     <mvc:annotation-driven/>
 
+    <!--拦截器配置-->
+    <mvc:interceptors>
+        <!--拦截器顺序执行-->
+        <mvc:interceptor>
+            <!--/**代表所有url，包括其子url-->
+            <mvc:mapping path="/product/favorites/list"/>
+            <mvc:mapping path="/product/release"/>
+            <mvc:mapping path="/product/release/list"/>
+            <mvc:mapping path="/product/buy/list"/>
+            <mvc:mapping path="/product/sold/list"/>
+            <mvc:mapping path="/product/comment"/>
+            <mvc:mapping path="/product/buy/save"/>
+            <mvc:mapping path="/product/favorites/save"/>
+            <bean class="top.showtan.interceptor.UserInterceptor"></bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
     <!--spring 与 thymeleaf整合-->
     <bean id="templateResolver" class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
         <property name="characterEncoding" value="UTF-8"/>

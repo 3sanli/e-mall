@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import top.showtan.model.ProductModel;
 import top.showtan.model.criteria.ProductCriteria;
 import top.showtan.service.ProductService;
+import top.showtan.service.UserService;
 import top.showtan.util.AppCondition;
 import top.showtan.util.PageModel;
 import top.showtan.util.Pager;
@@ -25,6 +26,9 @@ import java.util.Map;
 public class ProductController {
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private UserService userService;
 
 
     @RequestMapping("/search")
@@ -58,9 +62,8 @@ public class ProductController {
                 return Response.SUCCESS();
             }
         }
-        //--------TODO MODIFY THE CREATORID AND CREATORNAME
-        product.setCreatorId(1);
-        product.setCreatorName("user01");
+        product.setCreatorId(userService.getCurrentUser().getId());
+        product.setCreatorName(userService.getCurrentUser().getNickName());
         productService.save(product);
         return Response.SUCCESS();
     }
