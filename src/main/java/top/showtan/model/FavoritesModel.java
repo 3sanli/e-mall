@@ -1,6 +1,5 @@
 package top.showtan.model;
 
-import top.showtan.entity.Product;
 
 import java.util.Date;
 

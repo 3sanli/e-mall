@@ -2,7 +2,6 @@ package top.showtan.model;
 
 import top.showtan.entity.UserPicture;
 
-import java.util.List;
 
 public class UserModel {
     /**
