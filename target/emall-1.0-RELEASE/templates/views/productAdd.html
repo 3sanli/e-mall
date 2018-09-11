@@ -1,57 +1,59 @@
-<div class="page-header" style="text-align: center;">
-    <h1>跳蚤市场
-        <small>安徽工程大学二手交易市场</small>
-    </h1>
-</div>
+<div style="width: 900px;margin: auto;">
+    <div class="page-header" style="text-align: center;">
+        <h1>跳蚤市场
+            <small>安徽工程大学二手交易市场</small>
+        </h1>
+    </div>
 
-<div class="center-block">
-    <form class="form-horizontal">
-        <div class="form-group">
-            <label class="col-sm-2 control-label">类别</label>
-            <div class="col-sm-4">
-                <select class="form-control" id="inputProductCategory">
-                    <option selected></option>
-                </select>
+    <div class="center-block">
+        <form class="form-horizontal">
+            <div class="form-group" style="display: inline;">
+                <label class="col-sm-2 control-label">类别</label>
+                <div class="col-sm-6">
+                    <select class="form-control" id="inputProductCategory">
+                        <option selected></option>
+                    </select>
+                </div>
             </div>
-        </div>
 
-        <div class="form-group">
-            <input type="hidden" th:value="${product?.id}" id="productId">
-            <label class="col-sm-2 control-label">名称</label>
-            <div class="col-sm-4">
-                <input type="text" th:value="${product?.name}" class="form-control" id="inputName"
-                       placeholder="请输入商品名称">
+            <div class="form-group" style="display: inline;">
+                <input type="hidden" th:value="${product?.id}" id="productId">
+                <label class="col-sm-2 control-label">名称</label>
+                <div class="col-sm-6">
+                    <input type="text" th:value="${product?.name}" class="form-control" id="inputName"
+                           placeholder="请输入商品名称">
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label class="col-sm-2 control-label">价格</label>
-            <div class="col-sm-4">
-                <input type="text" th:value="${product?.price}" class="form-control" id="inputPrice"
-                       placeholder="请输入价格">
+            <div class="form-group" style="display: inline;">
+                <label class="col-sm-2 control-label">价格</label>
+                <div class="col-sm-6">
+                    <input type="text" th:value="${product?.price}" class="form-control" id="inputPrice"
+                           placeholder="请输入价格">
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label class="col-sm-2 control-label">简介</label>
-            <div class="col-sm-4">
+            <div class="form-group" style="display: inline;">
+                <label class="col-sm-2 control-label">简介</label>
+                <div class="col-sm-6">
                 <textarea th:value="${product?.introduction}" th:text="${product?.introduction}" class="form-control"
                           rows="4" id="inputIntroduction"
                           placeholder="请输入商品简介"></textarea>
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label class="col-sm-2 control-label">商品图片</label>
-            <div class="col-sm-4">
+            <div class="form-group" style="display: inline;">
+                <label class="col-sm-2 control-label">商品图片</label>
+                <div class="col-sm-6">
                 <textarea name="content1"
                           cols="100" rows="8"
                           style="width:700px;height:200px;visibility:hidden;"></textarea>
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-                <button class="btn btn-default" type="button" onclick="release()">提交</button>
+            <div class="form-group" style="display: inline;">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button class="btn btn-default" type="button" onclick="release()">提交</button>
+                </div>
             </div>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
 
 <script th:inline="javascript">

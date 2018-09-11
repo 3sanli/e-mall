@@ -1,5 +1,6 @@
 package top.showtan.model;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class CommentModel {
@@ -87,5 +88,10 @@ public class CommentModel {
 
     public void setCredit(Integer credit) {
         this.credit = credit;
+    }
+
+    public String getCommentTime(){
+        SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        return sf.format(getCreatedTime());
     }
 }

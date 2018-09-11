@@ -73,6 +73,7 @@
         <where>
             <if test="productId != null">
                 productId = #{productId}
+                AND status = 'COMPLETED'
             </if>
         </where>
     </select>

@@ -1,0 +1,209 @@
+<div class="panel panel-default col-lg-9" style="float:none;height: 500px;margin: 200px auto auto auto;">
+    <div class="panel-body">
+        <div style="float:none;margin:20px auto auto auto;">
+            <div class="panel-body">
+                <div class="col-lg-9" style="float:none;margin:auto;">
+                    <span class="col-lg-3" style="text-align: right;height: inherit;">
+                        <i class="Hui-iconfont Hui-iconfont-phone-android"
+                           style="font-size: 30px;color: green; margin-right: 40px;"></i>
+                    </span>
+                    <div class="input-group col-lg-9">
+                        <input type="text" id="mobile" class="form-control" placeholder="mobile..."
+                               aria-describedby="basic-addon2" >
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-lg-9" style="float:none;margin:auto;">
+                    <span class="col-lg-3" style="text-align: right;height: inherit;">
+                        <i class="Hui-iconfont Hui-iconfont-userid"
+                           style="font-size: 30px;color: green; margin-right: 40px;"></i>
+                    </span>
+                    <div class="input-group col-lg-9">
+                        <input type="text" id="nickName" class="form-control" placeholder="nickName..."
+                               aria-describedby="basic-addon2">
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-lg-9" style="float:none;margin:auto;">
+                    <span class="col-lg-3" style="text-align: right;height: inherit;">
+                        <i class="Hui-iconfont Hui-iconfont-suoding"
+                           style="font-size: 30px;color: green; margin-right: 40px;"></i>
+                    </span>
+                    <div class="input-group col-lg-9">
+                        <input type="password" id="passwordOld" class="form-control" placeholder="password..."
+                               aria-describedby="basic-addon2">
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-lg-9" style="float:none;margin:auto;">
+                    <span class="col-lg-3" style="text-align: right;height: inherit;">
+                        <i class="Hui-iconfont Hui-iconfont-key"
+                           style="font-size: 30px;color: green; margin-right: 40px;"></i>
+                    </span>
+                    <div class="input-group col-lg-9">
+                        <input type="password" id="passwordNew" class="form-control"
+                               placeholder="confrim your password..." aria-describedby="basic-addon2">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-3" style="float:right;">
+                <button type="button" class="btn btn-info" onclick="modify()">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    var user = /*[[${user}]]*/{};
+
+    var mobile = $('#mobile');
+    var nickName = $('#nickName');
+    var passwordOld = $('#passwordOld');
+    var passwordNew = $('#passwordNew');
+
+    $(document).ready(function () {
+        mobile.val(user.mobile);
+        nickName.val(user.nickName);
+
+        passwordOld.bind('blur', function () {
+            validatePasswordOld();
+        });
+        mobile.bind('blur', function () {
+            loadUserByMobile();
+        });
+        mobile.bind('focus', function () {
+            mobile.css({
+                'border-color': '#ccc'
+            });
+        });
+        nickName.bind('blur', function () {
+            loadUserByNickName();
+        });
+        nickName.bind('focus', function () {
+            nickName.css({
+                'border-color': '#ccc'
+            });
+        });
+        passwordOld.bind('focus', function () {
+            passwordOld.css({
+                'border-color': '#ccc'
+            });
+        });
+    })
+
+    function modify() {
+        if (validatePasswordOld()) {
+            modifyUser();
+        }
+    }
+
+    function validatePasswordOld() {
+        if (passwordOld.val() == user.password) {
+            return true;
+        }
+        passwordOld.css({
+            'border-color': 'red'
+        });
+        return false;
+    }
+
+    function loadUserByMobile() {
+        var result = false;
+        if (validateInput(mobile.val())) {
+            $.ajax({
+                type: 'post',
+                contentType: 'application/json',
+                async: false,
+                data: JSON.stringify({
+                    mobile: mobile.val()
+                }),
+                url: '/emall/user/search',
+                success: function (data) {
+                    if (data.user != null) {
+                        //若为本人信息则可继续修改
+                        if (data.user.mobile == user.mobile) {
+                            return true;
+                        }
+                        mobile.css({
+                            'border-color': 'red'
+                        });
+                        result = false;
+                    }
+                    else {
+                        result = true;
+                    }
+                }
+            });
+        }
+        else {
+            result = false;
+        }
+        return result;
+    }
+
+    function loadUserByNickName() {
+        var result = false;
+        if (validateInput(nickName.val())) {
+            $.ajax({
+                type: 'post',
+                contentType: 'application/json',
+                async: false,
+                data: JSON.stringify({
+                    nickName: nickName.val()
+                }),
+                url: '/emall/user/search',
+                success: function (data) {
+                    if (data.user != null) {
+                        //若为本人信息则可继续修改
+                        if (data.user.nickName == user.nickName) {
+                            return true;
+                        }
+                        nickName.css({
+                            'border-color': 'red'
+                        });
+                        result = false;
+                    }
+                    else {
+                        result = true;
+                    }
+                }
+            });
+        }
+        else {
+            result = false;
+        }
+        return result;
+    }
+
+    function modifyUser() {
+        $.ajax({
+            type: 'post',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                id: user.id,
+                nickName: nickName.val(),
+                mobile: mobile.val(),
+                password: passwordNew.val()
+            }),
+            url: '/emall/user/modify',
+            success: function (data) {
+                if (data.code == '1000') {
+                    alert('修改成功');
+                    window.location.href = '/emall/portal/personal';
+                }
+            }
+        })
+    }
+
+    function validateInput(data) {
+        if ($.trim(data) == null || $.trim(data) == '') {
+            return false;
+        }
+        return true;
+    }
+</script>

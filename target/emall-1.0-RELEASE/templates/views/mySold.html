@@ -1,8 +1,10 @@
-<div th:replace="layouts/search"></div>
+<div style="width: 900px;margin: auto;">
+    <div th:replace="layouts/search"></div>
 
-<div class="items"></div>
+    <div class="items"></div>
 
-<div th:replace="layouts/pager"></div>
+    <div th:replace="layouts/pager"></div>
+</div>
 
 <script th:inline="javascript">
     var solds = /*[[${solds}]]*/{};
@@ -33,7 +35,7 @@
             var item = $('<div class="media"></div>');
 
             var picture = $('<div class="media-left">\n' +
-                '        <a href="#">\n' +
+                '        <a href="/emall/product/detail?id=' + product.id + '">\n' +
                 '            <img style="width: 80px;height: 80px;" class="media-object" src="' + image + '" alt="' + product.name + '">\n' +
                 '        </a>\n' +
                 '    </div>');
@@ -41,10 +43,13 @@
             var info = $('<div class="media-body">\n' +
                 '        <a class="media-heading" href="/emall/product/detail?id=' + product.id + '">' + product.name + '</a>\n' +
                 '        <p>￥' + product.price + '</p>\n' +
-                '        <p>' + product.introduction + '</p>\n' +
+                '        <p>' + formatLongSentence(product.introduction,50) + '</p>\n' +
                 '        <p>' + product.status + '</p>\n' +
                 '    </div>');
 
+            if (sold.comment == null) {
+                info.append('<button type="button" class="btn btn-danger" onclick="goToComment('+ sold.productId +')">评论</button>');
+            }
 
             info.append('<button type="button" class="btn btn-danger" onclick="deleteSold(' + sold.id + ')">删除</button>');
 
@@ -52,6 +57,10 @@
             item.append(info);
             items.append(item);
         });
+    }
+
+    function goToComment(productId) {
+        window.location.href = "/emall/product/comment?productId=" + productId +'&model=1';
     }
 
     function loadSolds() {

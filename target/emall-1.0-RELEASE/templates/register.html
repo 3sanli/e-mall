@@ -4,15 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script th:src="@{/static/scripts/jquery-1.10.2.min.js}"></script>
-    <link rel="stylesheet" type="text/css" th:href="@{/static/bootstrap/css/bootstrap.css}">
-    <link rel="stylesheet" type="text/css" th:href="@{/static/bootstrap/css/bootstrap-theme.css}">
-    <script th:src="@{/static/bootstrap/js/bootstrap.js}"></script>
-    <link rel="stylesheet" th:href="@{/static/kindeditor/themes/default/default.css}"/>
-    <link rel="stylesheet" th:href="@{/static/kindeditor/plugins/code/prettify.css}"/>
-    <script charset="utf-8" th:src="@{/static/kindeditor/kindeditor-all.js}"></script>
-    <script charset="utf-8" th:src="@{/static/kindeditor/lang/zh-CN.js}"></script>
-    <script charset="utf-8" th:src="@{/static/kindeditor/plugins/code/prettify.js}"></script>
-    <link th:href="@{/static/H-ui/lib/Hui-iconfont/1.0.8/iconfont.css}" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/static/bootstrap/css/bootstrap-theme.min.css}">
+    <script th:src="@{/static/bootstrap/js/bootstrap.min.js}"></script>
+    <link th:href="@{/static/H-ui/lib/Hui-iconfont/1.0.8/iconfont.min.css}" rel="stylesheet" type="text/css" />
     <title>register</title>
 </head>
 <body>
@@ -60,6 +55,8 @@
         </div>
         <div class="panel-body">
             <div class="col-lg-4" style="float:right;">
+                <a href="/emall/portal/login" class="btn btn-success" role="button">Sign in</a>
+
                 <button type="button" class="btn btn-primary" onclick="register()">
                     Sign up
                 </button>
@@ -72,6 +69,7 @@
     var mobile = $('#userMobile');
     var password = $('#userPassword');
     var passwordConfirm = $('#userPasswordConfirm');
+    var defaultUserPicture = '/emall/static/picture/default.png';
 
     $(document).ready(function () {
         password.bind('blur', function () {
@@ -115,13 +113,13 @@
             $.ajax({
                 type: 'post',
                 contentType: 'application/json',
-                async : false,
+                async: false,
                 data: JSON.stringify({
                     mobile: mobile.val()
                 }),
                 url: '/emall/user/search',
                 success: function (data) {
-                    if (data.message == '000') {
+                    if (data.user != null) {
                         mobile.css({
                             'border-color': 'red'
                         });
@@ -146,7 +144,8 @@
             data: JSON.stringify({
                 nickName: mobile.val(),
                 mobile: mobile.val(),
-                password: password.val()
+                password: password.val(),
+                picture: defaultUserPicture
             }),
             url: '/emall/user/register',
             success: function (data) {

@@ -34,13 +34,9 @@ public class BuyModel {
      */
     private ProductModel product;
     /**
-     * 该次交易是否被评论
+     * 该次交易的评论
      */
-    private Boolean comment;
-
-    public BuyModel() {
-        this.comment = false;
-    }
+    private CommentModel comment;
 
     public Integer getId() {
         return id;
@@ -98,11 +94,11 @@ public class BuyModel {
         this.product = product;
     }
 
-    public Boolean getComment() {
+    public CommentModel getComment() {
         return comment;
     }
 
-    public void setComment(Boolean comment) {
+    public void setComment(CommentModel comment) {
         this.comment = comment;
     }
 }

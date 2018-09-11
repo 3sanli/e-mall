@@ -1,57 +1,86 @@
-<div class="row center-block" style="margin-bottom: 20px;">
-    <div class="col-lg-8" style="float: right;">
-        <div class="input-group">
-            <input type="text" id="name" class="form-control" placeholder="请输入商品名称...">
-            <span class="input-group-btn">
+<div style="width: 900px;margin: auto;">
+    <div class="row center-block" style="margin-bottom: 20px;">
+        <div class="col-lg-8" style="float: right;">
+            <div class="input-group">
+                <input type="text" id="name" class="form-control" placeholder="请输入商品名称...">
+                <span class="input-group-btn">
                 <button class="btn btn-default" type="button" onclick="loadProducts()">Go!</button>
             </span>
+            </div>
         </div>
     </div>
-</div>
 
-<nav class="navbar navbar-default">
-    <div class="container-fluid">
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false">价格 <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#" onclick="loadProducts()">价格从低到高</a></li>
-                        <li><a href="#" onclick="loadProducts()">价格从高到低</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                       aria-expanded="false">信誉 <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#" onclick="loadProducts()">信誉从低到高</a></li>
-                        <li><a href="#" onclick="loadProducts()">信誉从高到低</a></li>
-                    </ul>
-                </li>
-            </ul>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li class="dropdown">
+                        <a id="priceCriteria" th:value="1" href="#" class="dropdown-toggle" data-toggle="dropdown"
+                           role="button" aria-haspopup="true"
+                           aria-expanded="false">价格 <span class="glyphicon glyphicon-menu-down"
+                                                          aria-hidden="true"></span></a>
+                    </li>
+                    <li class="dropdown">
+                        <a id="creditCriteria" th:value="1" href="#" class="dropdown-toggle" data-toggle="dropdown"
+                           role="button" aria-haspopup="true"
+                           aria-expanded="false">信誉 <span class="glyphicon glyphicon-menu-down"
+                                                          aria-hidden="true"></span></a>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
-<div class="row items" style="margin-left: 10px;">
+    <div class="row items" style="margin-left: 10px;">
+    </div>
+
+    <div th:replace="layouts/pager"></div>
 </div>
 
-<div th:replace="layouts/pager"></div>
 
 <script th:inline="javascript">
     var products = /*[[${products}]]*/{};
     var pager = /*[[${pager}]]*/{};
 
+    var priceCriteria = $('#priceCriteria');
+    var creditCriteria = $('#creditCriteria');
+
     $(document).ready(function () {
         renderProducts(products);
         renderPager(pager);
-        $('#buttonPrePage').bind('click',function () {
+        $('#buttonPrePage').bind('click', function () {
             prePage(loadProducts);
         });
-        $('#buttonNextPage').bind('click',function () {
+        $('#buttonNextPage').bind('click', function () {
             nextPage(loadProducts);
         });
+
+        priceCriteria.bind('click', function () {
+            if (priceCriteria.val() == 0) {
+                priceCriteria.val(1);
+                priceCriteria.empty();
+                priceCriteria.append('价格 <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>');
+            }
+            else {
+                priceCriteria.val(0);
+                priceCriteria.empty();
+                priceCriteria.append('价格 <span class="glyphicon glyphicon-menu-up" aria-hidden="true"></span>');
+            }
+            loadProducts();
+        });
+        creditCriteria.bind('click', function () {
+            if (creditCriteria.val() == 0) {
+                creditCriteria.val(1);
+                creditCriteria.empty();
+                creditCriteria.append('信誉 <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>');
+            }
+            else {
+                creditCriteria.val(0);
+                creditCriteria.empty();
+                creditCriteria.append('信誉 <span class="glyphicon glyphicon-menu-up" aria-hidden="true"></span>');
+            }
+            loadProducts();
+        })
     });
 
     function loadProducts() {
@@ -62,9 +91,8 @@
                 searchInfo: JSON.stringify({
                     name: $('#name').val(),
                     productCategoryId: '',
-                    creatorId: '',
-                    priceCriteria: '',
-                    creditCriteria: ''
+                    priceCriteria: priceCriteria.val(),
+                    creditCriteria: creditCriteria.val()
                 }),
                 page: $('#nowPage').val()
             },
@@ -86,11 +114,13 @@
                 }
             });
             var item = $('<div class="col-sm-4 col-md-3 thumbnail" style="margin-right: 10px;margin-left: 10px;"></div>');
-            var item_image = $('<img style="width: 212px;height: 200px;" src="' + image + '" alt="' + product.name + '">');
-            var item_info = $('<div class="caption"><h3>￥' + product.price + '</h3><a href="/emall/product/detail?id='+ product.id +'">' + product.introduction + '</a></div>')
+            var item_image = $('<a href="/emall/product/detail?id=' + product.id + '"><img style="width: 212px;height: 200px;" src="' + image + '" alt="' + product.name + '"></a>');
+            var item_info = $('<div class="caption"><h3>￥' + product.price + '</h3><a href="/emall/product/detail?id=' + product.id + '">' + formatLongSentence(product.introduction,12) + '</a></div>')
             item.append(item_image);
             item.append(item_info);
             items.append(item);
         });
     }
+
+
 </script>

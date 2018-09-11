@@ -4,12 +4,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import top.showtan.dao.ProductMapper;
-import top.showtan.dao.ProductPictureMapper;
-import top.showtan.dao.SoldMapper;
+import top.showtan.dao.*;
+import top.showtan.entity.Comment;
 import top.showtan.entity.Product;
 import top.showtan.entity.ProductPicture;
 import top.showtan.entity.Sold;
+import top.showtan.model.CommentModel;
+import top.showtan.model.LogModel;
 import top.showtan.model.ProductModel;
 import top.showtan.model.SoldModel;
 import top.showtan.model.criteria.ProductCriteria;
@@ -32,6 +33,12 @@ public class SoldService {
     @Autowired
     private ProductPictureMapper productPictureMapper;
 
+    @Autowired
+    private CommentMapper commentMapper;
+
+    @Autowired
+    private LogMapper logMapper;
+
     /**
      * 根据id查询指定卖出记录
      *
@@ -40,11 +47,11 @@ public class SoldService {
      */
     public SoldModel getById(Integer id) {
         Sold sold = soldMapper.getById(id);
-        if(sold == null){
+        if (sold == null) {
             return null;
         }
         SoldModel soldModel = new SoldModel();
-        BeanUtils.copyProperties(sold,soldModel);
+        BeanUtils.copyProperties(sold, soldModel);
         return soldModel;
     }
 
@@ -58,7 +65,7 @@ public class SoldService {
      */
     public PageModel<SoldModel> search(SoldCriteria criteria, Long page, Long pageSize) {
         PageModel<SoldModel> result = new PageModel<>();
-        PageUtil pageUtil = new PageUtil(page,pageSize);
+        PageUtil pageUtil = new PageUtil(page, pageSize);
         List<Sold> solds = soldMapper.search(criteria, pageUtil.getSkip(), pageUtil.getTake());
         Long totalCount = soldMapper.countAll(criteria);
         //查询所有卖出记录
@@ -74,9 +81,31 @@ public class SoldService {
         //将商品封装到对应的卖出记录中
         List<SoldModel> soldModels = createSoldModelList(solds, productModels);
 
+        //查询用户是否对商品进行评论
+        List<Comment> comments = commentMapper.getByProductIds(criterias);
+        List<CommentModel> commentModels = BaseConvert.convertCommentListToCommentModelList(comments);
+        //将评论记录封装到buyModels中
+        mapCommentsWithSoldModels(soldModels, commentModels);
+
         result.setData(soldModels);
         result.setTotalCount(totalCount);
         return result;
+    }
+
+    /**
+     * 将交易评论分装到buyModels中
+     * @param soldModels
+     * @param comments
+     */
+    private void mapCommentsWithSoldModels(List<SoldModel> soldModels,List<CommentModel> comments){
+        for(SoldModel soldModel:soldModels){
+            for(CommentModel comment:comments){
+                if(comment.getProductId() == soldModel.getProductId() && comment.getCreatorId() == soldModel.getCreatorId()){
+                    soldModel.setComment(comment);
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -148,6 +177,11 @@ public class SoldService {
      */
     public void save(SoldModel sold) {
         soldMapper.save(sold);
+        //将此次卖出记录存入log表中
+        LogModel logModel = new LogModel();
+        BeanUtils.copyProperties(sold,logModel);
+        logModel.setType(1);
+        logMapper.save(logModel);
     }
 
     /**

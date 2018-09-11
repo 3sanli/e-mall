@@ -4,15 +4,14 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import top.showtan.dao.BuyMapper;
-import top.showtan.dao.CommentMapper;
-import top.showtan.dao.ProductMapper;
-import top.showtan.dao.ProductPictureMapper;
+import top.showtan.dao.*;
 import top.showtan.entity.Buy;
 import top.showtan.entity.Comment;
 import top.showtan.entity.Product;
 import top.showtan.entity.ProductPicture;
 import top.showtan.model.BuyModel;
+import top.showtan.model.CommentModel;
+import top.showtan.model.LogModel;
 import top.showtan.model.ProductModel;
 import top.showtan.model.criteria.BuyCriteria;
 import top.showtan.model.criteria.ProductCriteria;
@@ -37,6 +36,9 @@ public class BuyService {
 
     @Autowired
     private CommentMapper commentMapper;
+
+    @Autowired
+    private LogMapper logMapper;
 
     /**
      * 根据条件查询商品数目
@@ -75,6 +77,12 @@ public class BuyService {
     public void complete(BuyModel buy) {
         buy.setStatus(BuyStatus.COMPLETED);
         buyMapper.updateBuy(buy);
+
+        //将此次记录到log表中
+        LogModel logModel = new LogModel();
+        BeanUtils.copyProperties(buy,logModel);
+        logModel.setType(0);
+        logMapper.save(logModel);
     }
 
     /**
@@ -129,8 +137,9 @@ public class BuyService {
 
         //查询用户是否对商品进行评论
         List<Comment> comments = commentMapper.getByProductIds(criterias);
+        List<CommentModel> commentModels = BaseConvert.convertCommentListToCommentModelList(comments);
         //将评论记录封装到buyModels中
-        mapCommentsWithBuyModels(buyModels,comments);
+        mapCommentsWithBuyModels(buyModels,commentModels);
 
         result.setData(buyModels);
         result.setTotalCount(totalCount);
@@ -138,15 +147,15 @@ public class BuyService {
     }
 
     /**
-     * 将交易是否被评论分装到buyModels中
+     * 将交易评论分装到buyModels中
      * @param buyModels
      * @param comments
      */
-    private void mapCommentsWithBuyModels(List<BuyModel> buyModels,List<Comment> comments){
+    private void mapCommentsWithBuyModels(List<BuyModel> buyModels,List<CommentModel> comments){
         for(BuyModel buyModel:buyModels){
-            for(Comment comment:comments){
-                if(comment.getProductId() == buyModel.getProductId()){
-                    buyModel.setComment(true);
+            for(CommentModel comment:comments){
+                if(comment.getProductId() == buyModel.getProductId() && comment.getCreatorId() == buyModel.getCreatorId()){
+                    buyModel.setComment(comment);
                     break;
                 }
             }

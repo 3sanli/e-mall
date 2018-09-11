@@ -18,4 +18,10 @@
         (fromId,fromName,toId,toName,credit)
         VALUES (#{fromId},#{fromName},#{toId},#{toName},#{credit})
     </insert>
+
+    <select id="mark" resultType="Integer">
+        SELECT (SUM(credit)/COUNT(toId)) AS credit
+        FROM Score
+        WHERE toId = #{toId}
+    </select>
 </mapper>

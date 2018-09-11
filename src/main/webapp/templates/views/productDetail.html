@@ -7,71 +7,76 @@
         width: 400px;
     }
 </style>
-<div th:replace="layouts/search"></div>
+<div style="width: 900px;margin: auto;">
+    <div th:replace="layouts/search"></div>
 
-<div class="row">
-    <div class="body">
-        <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
-            <!-- 轮播（Carousel）指标 -->
-            <ol class="carousel-indicators">
-            </ol>
+    <div class="row">
+        <div class="body">
+            <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+                <!-- 轮播（Carousel）指标 -->
+                <ol class="carousel-indicators">
+                </ol>
 
-            <!-- 轮播（Carousel）项目内容 -->
-            <div class="carousel-inner" role="listbox">
+                <!-- 轮播（Carousel）项目内容 -->
+                <div class="carousel-inner" role="listbox">
+                </div>
+
+                <!-- 轮播（Carousel）导航(控制左右移动) -->
+                <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                    <span class="sr-only">Next</span>
+                </a>
             </div>
+        </div>
 
-            <!-- 轮播（Carousel）导航(控制左右移动) -->
-            <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
-                <span class="glyphicon glyphicon-chevron-left"></span>
-                <span class="sr-only">Previous</span>
-            </a>
-            <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
-                <span class="glyphicon glyphicon-chevron-right"></span>
-                <span class="sr-only">Next</span>
-            </a>
-        </div>
-    </div>
-
-    <div class="body" style="float: left;margin-left: 30px;">
-        <div class="page-header" style="text-align: center;">
-            <h2 id="productName"></h2>
-        </div>
-        <div>
-            <h3 id="productPrice"></h3>
-        </div>
-        <div>
-            <h3 id="productIntroduction"></h3>
-        </div>
-        <div>
-            <h3 id="productCategory"></h3>
-        </div>
-        <div style="text-align: center;">
-            <button type="button" id="buttonBuy" class="btn btn-danger" onclick="productBuy()">立即购买</button>
-            <button type="button" id="buttonFavorites" value="false" class="btn btn-default" onclick="productFavorites()">收藏</button>
+        <div class="body" style="float: left;margin-left: 30px;">
+            <div class="page-header" style="text-align: center;">
+                <h2 id="productName"></h2>
+            </div>
+            <div>
+                <h3 id="productPrice"></h3>
+            </div>
+            <div>
+                <h4 id="productIntroduction"></h4>
+            </div>
+            <div>
+                <h4 id="productCategory"></h4>
+            </div>
+            <div style="text-align: center;">
+                <button type="button" id="buttonBuy" class="btn btn-danger" onclick="productBuy()">立即购买</button>
+                <button type="button" id="buttonFavorites" value="false" class="btn btn-default"
+                        onclick="productFavorites()">收藏
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
 <script th:inline="javascript">
+    var user = /*[[${session.user}]]*/{};
     var product = /*[[${product}]]*/{};
-    var isFavorites = /*[[${isFavorites}]]*/
+    var isFavorites = /*[[${isFavorites}]]*/{};
 
     $(document).ready(function () {
         renderProductPictures(product);
         renderProductInfo(product);
-        $('#buttonSearch').bind('click',function () {
-            window.location.href = '/emall/portal/product/list?searchInfo='+ encodeURIComponent(JSON.stringify({name:$('#name').val()})) +'';
+        $('#buttonSearch').bind('click', function () {
+            window.location.href = '/emall/portal/product/list?searchInfo=' + encodeURIComponent(JSON.stringify({name: $('#name').val()})) + '';
         });
-        if(product.status == 'SWAPING'){
-            $('#buttonBuy').attr('disabled','disabled');
+        if (product.status == 'SWAPING') {
+            $('#buttonBuy').attr('disabled', 'disabled');
             $('#buttonBuy').text('交易中');
         }
-        if(product.status == 'SOLD'){
-            $('#buttonBuy').attr('disabled','disabled');
+        if (product.status == 'SOLD') {
+            $('#buttonBuy').attr('disabled', 'disabled');
             $('#buttonBuy').text('已售出');
         }
-        if(isFavorites){
-            $('#buttonFavorites').attr('class','btn btn-primary');
+        if (isFavorites) {
+            $('#buttonFavorites').attr('class', 'btn btn-primary');
             $('#buttonFavorites').val(true);
         }
     })
@@ -112,45 +117,57 @@
     }
 
     function productBuy() {
-        $.ajax({
-            type: 'post',
-            contentType: 'application/json',
-            url: '/emall/product/swap/save',
-            data: JSON.stringify({
-                productId: product.id
-            }),
-            success: function (data) {
-                if (data.code == '1000') {
-                    alert('购买成功');
-                    window.location.href = '/emall/product/detail?id='+ product.id +'';
-                }
-                else {
-                    alert(data.message);
-                }
-            }
-        })
-    }
-    
-    function productFavorites() {
-        var buttonFavorites = $('#buttonFavorites');
-        $.ajax({
-            type: 'post',
-            contentType: 'application/json',
-            url: (buttonFavorites.val()=='true')?'/emall/product/favorites/delete':'/emall/product/favorites/save',
-            data: JSON.stringify({
-                productId: product.id
-            }),
-            success:function (data) {
-                if(data.code == '1000'){
-                    if(buttonFavorites.val() == 'true'){
-                        buttonFavorites.attr('class','btn btn-default');
-                        buttonFavorites.val(false);
-                    }else{
-                        buttonFavorites.attr('class','btn btn-primary');
-                        buttonFavorites.val(true);
+        if (user == null) {
+            alert("您还未登录，将自动跳转到登录页面！");
+            window.location.href = "/emall/portal/login";
+        }
+        else {
+            $.ajax({
+                type: 'post',
+                contentType: 'application/json',
+                url: '/emall/product/buy/save',
+                data: JSON.stringify({
+                    productId: product.id
+                }),
+                success: function (data) {
+                    if (data.code == '1000') {
+                        alert('购买成功');
+                        window.location.href = '/emall/product/detail?id=' + product.id + '';
+                    }
+                    else {
+                        alert(data.message);
                     }
                 }
-            }
-        })
+            })
+        }
+    }
+
+    function productFavorites() {
+        if (user == null) {
+            alert("您还未登录，将自动跳转到登录页面！");
+            window.location.href = "/emall/portal/login";
+        }
+        else {
+            var buttonFavorites = $('#buttonFavorites');
+            $.ajax({
+                type: 'post',
+                contentType: 'application/json',
+                url: (buttonFavorites.val() == 'true') ? '/emall/product/favorites/delete' : '/emall/product/favorites/save',
+                data: JSON.stringify({
+                    productId: product.id
+                }),
+                success: function (data) {
+                    if (data.code == '1000') {
+                        if (buttonFavorites.val() == 'true') {
+                            buttonFavorites.attr('class', 'btn btn-default');
+                            buttonFavorites.val(false);
+                        } else {
+                            buttonFavorites.attr('class', 'btn btn-primary');
+                            buttonFavorites.val(true);
+                        }
+                    }
+                }
+            })
+        }
     }
 </script>

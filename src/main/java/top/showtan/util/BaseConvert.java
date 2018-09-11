@@ -67,7 +67,13 @@ public class BaseConvert {
         }
     }
 
-    public static List<CommentModel> convertCommentListToCommentModelList(List<Comment> comments){
+    /**
+     * 将CommentList转换为CommentModelList
+     *
+     * @param comments
+     * @return
+     */
+    public static List<CommentModel> convertCommentListToCommentModelList(List<Comment> comments) {
         if (!CollectionUtils.isEmpty(comments)) {
             List<CommentModel> commentModels = new ArrayList<>();
             for (Comment comment : comments) {

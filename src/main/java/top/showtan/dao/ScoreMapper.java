@@ -11,4 +11,12 @@ public interface ScoreMapper {
      * @param score
      */
     void save(ScoreModel score);
+
+    /**
+     * 获取指定用户当前平均信誉值
+     *
+     * @param toId
+     * @return
+     */
+    Integer mark(Integer toId);
 }

@@ -1,0 +1,27 @@
+<div style="height: 900px;margin-top: -20px;">
+    <span class="col-lg-2"
+          style="float: left;height: -webkit-fill-available;border: 1px solid #CCCCCC; padding-right: 0px;padding-left: 0px;background-color: #dedee2;">
+        <ul class="nav nav-pills nav-stacked">
+            <li role="presentation" style="border-bottom: 1px solid;">
+                <a href="#" id="userInfo" style="border-radius: 0px;color: #484646;">用户信息</a></li>
+            <li role="presentation" style="border-bottom: 1px solid;">
+                <a href="#" id="userLaste" style="border-radius: 0px;color: #484646;">他的最近</a></li>
+        </ul>
+    </span>
+    <span id="panelMain" class="col-lg-10" style="float: right;">
+    </span>
+</div>
+
+<script th:inline="javascript">
+    var id = /*[[${id}]]*/{};
+
+    $(document).ready(function () {
+        $('#userInfo').bind('click', function () {
+            $('#panelMain').load('/emall/portal/personal/user/info?id=' + id);
+        });
+        $('#userLaste').bind('click', function () {
+            $('#panelMain').load('/emall/portal/personal/user/recent?id=' + id);
+        });
+        $('#userInfo').click();
+    })
+</script>

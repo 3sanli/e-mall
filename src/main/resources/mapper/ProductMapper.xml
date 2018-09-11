@@ -38,36 +38,37 @@
     </select>
 
     <select id="search" resultMap="productMap">
-        SELECT * FROM Product
+        SELECT Product.* FROM Product INNER JOIN User
+        ON Product.creatorId = User.id
         <where>
             <if test="criteria.name != null and criteria.name != ''">
-                AND name LIKE '%${criteria.name}%'
+                AND Product.name LIKE '%${criteria.name}%'
             </if>
             <if test="criteria.productCategoryId != null">
-                AND productCategoryId = #{criteria.productCategoryId}
+                AND Product.productCategoryId = #{criteria.productCategoryId}
             </if>
             <if test="criteria.creatorId != null">
-                creatorId = #{criteria.creatorId}
-                AND status != 'SOLD'
+                Product.creatorId = #{criteria.creatorId}
+                AND Product.status != 'SOLD'
             </if>
             <if test="criteria.creatorId == null">
-                AND status = 'RELEASING'
+                AND Product.status = 'RELEASING'
             </if>
         </where>
         <trim prefix="ORDER BY" suffixOverrides=",">
             <if test="criteria.priceCriteria == 0">
-                price ASC ,
+                Product.price ASC ,
             </if>
             <if test="criteria.priceCriteria == 1">
-                price DESC ,
+                Product.price DESC ,
             </if>
             <if test="criteria.creditCriteria == 0">
-                credit ASC ,
+                User.credit ASC ,
             </if>
             <if test="criteria.creditCriteria == 1">
-                credit DESC ,
+                User.credit DESC ,
             </if>
-            createdTIme DESC ,
+            Product.createdTIme DESC ,
         </trim>
         <if test="skip &gt;= 0 and take &gt;= 0">
             LIMIT #{skip},#{take}

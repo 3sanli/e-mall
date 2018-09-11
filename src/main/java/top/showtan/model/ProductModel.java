@@ -129,4 +129,8 @@ public class ProductModel {
     public void setPictures(List<ProductPicture> pictures) {
         this.pictures = pictures;
     }
+
+ /*   public String getProductCategory(){
+
+    }*/
 }

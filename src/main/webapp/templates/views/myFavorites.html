@@ -1,8 +1,10 @@
-<div th:replace="layouts/search"></div>
+<div style="width: 900px;margin: auto;">
+    <div th:replace="layouts/search"></div>
 
-<div class="items"></div>
+    <div class="items"></div>
 
-<div th:replace="layouts/pager"></div>
+    <div th:replace="layouts/pager"></div>
+</div>
 
 <script th:inline="javascript">
     var favorites = /*[[${favorites}]]*/{};
@@ -33,7 +35,7 @@
             var item = $('<div class="media"></div>');
 
             var picture = $('<div class="media-left">\n' +
-                '        <a href="#">\n' +
+                '        <a href="/emall/product/detail?id=' + product.id + '">\n' +
                 '            <img style="width: 80px;height: 80px;" class="media-object" src="' + image + '" alt="' + product.name + '">\n' +
                 '        </a>\n' +
                 '    </div>');
@@ -41,7 +43,7 @@
             var info = $('<div class="media-body">\n' +
                 '        <a class="media-heading" href="/emall/product/detail?id=' + product.id + '">' + product.name + '</a>\n' +
                 '        <p>￥' + product.price + '</p>\n' +
-                '        <p>' + product.introduction + '</p>\n' +
+                '        <p>' + formatLongSentence(product.introduction,50) + '</p>\n' +
                 '        <p>' + product.status + '</p>\n' +
                 '    </div>');
 

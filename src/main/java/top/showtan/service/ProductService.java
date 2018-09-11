@@ -74,10 +74,17 @@ public class ProductService {
     private List<ProductPicture> createProductPictureList(ProductModel productModel) {
         List<ProductPicture> productPictures = new ArrayList<>();
         if (!CollectionUtils.isEmpty(productModel.getPictures())) {
+            //TODO
+            //设置第一张图片为商品主图片
+            int main = 0;
             for (ProductPicture picture : productModel.getPictures()) {
                 ProductPicture productPicture = new ProductPicture();
                 BeanUtils.copyProperties(picture, productPicture);
                 productPicture.setProductId(productModel.getId());
+                if(main == 0){
+                    productPicture.setMain(true);
+                    main++;
+                }
                 productPictures.add(productPicture);
             }
         }

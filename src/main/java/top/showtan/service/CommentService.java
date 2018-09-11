@@ -2,14 +2,12 @@ package top.showtan.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import top.showtan.dao.BuyMapper;
-import top.showtan.dao.CommentMapper;
-import top.showtan.dao.ProductMapper;
-import top.showtan.dao.ScoreMapper;
+import top.showtan.dao.*;
 import top.showtan.entity.Buy;
 import top.showtan.entity.Product;
 import top.showtan.model.CommentModel;
 import top.showtan.model.ScoreModel;
+import top.showtan.model.UserModel;
 import top.showtan.model.criteria.BuyCriteria;
 import top.showtan.model.criteria.CommentCriteria;
 import top.showtan.model.criteria.ProductCriteria;
@@ -27,6 +25,9 @@ public class CommentService {
 
     @Autowired
     private ScoreMapper scoreMapper;
+
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 根据查询条件判断用户是否已评论
@@ -60,8 +61,16 @@ public class CommentService {
             score = new ScoreModel(product.getCreatorId(), product.getCreatorName(), buy.getCreatorId(), buy.getCreatorName(), comment.getCredit());
         }
         //买家评论商家
-        score = new ScoreModel(comment.getCreatorId(), comment.getCreatorName(), product.getCreatorId(), product.getCreatorName(), comment.getCredit());
+        else {
+            score = new ScoreModel(comment.getCreatorId(), comment.getCreatorName(), product.getCreatorId(), product.getCreatorName(), comment.getCredit());
+        }
 
         scoreMapper.save(score);
+        //用户评信誉值过程，后期会封装在别处
+        Integer credit = scoreMapper.mark(score.getToId());
+        UserModel userModel = new UserModel();
+        userModel.setId(score.getToId());
+        userModel.setCredit(credit);
+        userMapper.modify(userModel);
     }
 }

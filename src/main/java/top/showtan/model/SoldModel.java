@@ -1,6 +1,7 @@
 package top.showtan.model;
 
 
+
 import java.util.Date;
 
 public class SoldModel {
@@ -29,6 +30,11 @@ public class SoldModel {
      * 用户卖出记录所涉及到的商品
      */
     private ProductModel product;
+
+    /**
+     * 该次交易的评论
+     */
+    private CommentModel comment;
 
     public Integer getId() {
         return id;
@@ -76,5 +82,13 @@ public class SoldModel {
 
     public void setProduct(ProductModel product) {
         this.product = product;
+    }
+
+    public CommentModel getComment() {
+        return comment;
+    }
+
+    public void setComment(CommentModel comment) {
+        this.comment = comment;
     }
 }

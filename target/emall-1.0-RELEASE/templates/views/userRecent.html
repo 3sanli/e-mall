@@ -1,0 +1,52 @@
+<ul id="logMain" class="layui-timeline">
+</ul>
+<script th:inline="javascript">
+    var logs = /*[[${logs}]]*/{};
+    var pager = /*[[${pager}]]*/{};
+    var logMain = $('#logMain');
+    var defaultImage = '/emall/static/picture/default.png';
+
+    $(document).ready(function () {
+        renderLogs(logs);
+    })
+
+    function renderLogs(logs) {
+        $.each(logs, function (i, log) {
+            var content = $('<li class="layui-timeline-item">\n' +
+                '        <i class="layui-icon layui-timeline-axis">&#xe63f;</i>\n' +
+                '        <div class="layui-timeline-content layui-text">\n' +
+                '        </div>\n' +
+                '    </li>');
+            var title = log.logTime + '  ' + ((log.type == 0) ? '买到了' : '卖出了');
+            var head = $('<h3 class="layui-timeline-title">' + title + '</h3>');
+            var product = $('<p>\n' +
+                '                ' + log.product.name + '\n' +
+                '                <br>' + log.product.price + '\n' +
+                '                <br>' + log.product.introduction + '\n' +
+                '            </p>');
+            var comment = null;
+            if(log.comment != null){
+                comment = $('<ul class="commentList">\n' +
+                    '  <li class="item cl"> <a href="#"><i class="avatar size-L radius"><img alt="' + log.comment.creatorName + '" src="' + defaultImage + '"></i></a>\n' +
+                    '    <div class="comment-main">\n' +
+                    '      <header class="comment-header">\n' +
+                    '        <div class="comment-meta"><a class="comment-author" href="/emall/portal/personal?id=' + log.comment.creatorId + '">' + log.comment.creatorName + '</a> 评论于\n' +
+                    '          <time>' + log.comment.commentTime + '</time>\n' +
+                    '        </div>\n' +
+                    '      </header>\n' +
+                    '      <div class="comment-body">\n' +
+                    '        <p>' + log.comment.comment + '</p>\n' +
+                    '      </div>\n' +
+                    '    </div>\n' +
+                    '  </li>\n' +
+                    '</ul>');
+            }
+
+            content.find('div').append(head);
+            content.find('div').append(product);
+            content.find('div').append(comment);
+            logMain.append(content);
+        })
+    }
+
+</script>

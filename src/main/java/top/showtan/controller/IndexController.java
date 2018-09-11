@@ -8,10 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-import top.showtan.model.BuyModel;
-import top.showtan.model.FavoritesModel;
-import top.showtan.model.ProductModel;
-import top.showtan.model.SoldModel;
+import top.showtan.model.*;
 import top.showtan.model.criteria.*;
 import top.showtan.service.*;
 import top.showtan.util.AppCondition;
@@ -37,17 +34,31 @@ public class IndexController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private LogService logService;
 
-    @RequestMapping({"/", "/index"})
-    public ModelAndView index() {
-        ModelAndView mv = new ModelAndView("layouts/header");
+
+    /*@RequestMapping({"/", "/index"})
+    public ModelAndView index(@RequestParam(value = "searchInfo", required = false) String searchInfo,
+                                    @RequestParam(value = "page", defaultValue = AppCondition.INIT_PAGE) Long page,
+                                    @RequestParam(value = "pageSize", defaultValue = AppCondition.INIT_PAGESIZE) Long pageSize) {
+        ModelAndView mv = ModelAndViewUtil.CreateModelAndView("views/productList");
+        ProductCriteria criteria = new ProductCriteria();
+        if (!StringUtils.isEmpty(searchInfo)) {
+            criteria = JSON.parseObject(searchInfo, ProductCriteria.class);
+        }
+        PageModel<ProductModel> pageModel = productService.search(criteria, page, pageSize);
+        Pager pager = new Pager(pageModel.getTotalCount(), page, pageSize);
+        mv.addObject("products", pageModel.getData());
+        mv.addObject("name", criteria.getName());
+        mv.addObject("pager", pager);
         return mv;
-    }
+    }*/
 
-    @RequestMapping("/portal/product/list")
+    @RequestMapping({"/portal/product/list", "/"})
     public ModelAndView listProduct(@RequestParam(value = "searchInfo", required = false) String searchInfo,
                                     @RequestParam(value = "page", defaultValue = AppCondition.INIT_PAGE) Long page,
-                                    @RequestParam(value = "pageSize", defaultValue = AppCondition.INIT_PAGESIZE) Long pageSize)  {
+                                    @RequestParam(value = "pageSize", defaultValue = AppCondition.INIT_PAGESIZE) Long pageSize) {
 
         ModelAndView mv = ModelAndViewUtil.CreateModelAndView("views/productList");
         ProductCriteria criteria = new ProductCriteria();
@@ -85,7 +96,7 @@ public class IndexController {
         favoritesCriteria.setProductId(id);
         favoritesCriteria.setCreatorId(userService.getCurrentUser().getId());
         mv.addObject("product", productService.getById(criteria));
-        mv.addObject("isFavorites",(favoritesService.countFavoriets(favoritesCriteria)==0)?false:true);
+        mv.addObject("isFavorites", (favoritesService.countFavoriets(favoritesCriteria) == 0) ? false : true);
         return mv;
     }
 
@@ -144,9 +155,11 @@ public class IndexController {
 
     @RequestMapping("/product/comment")
     @ResponseBody
-    public ModelAndView comment(@RequestParam(value = "productId",required = true)Integer productId){
+    public ModelAndView comment(@RequestParam(value = "productId", required = true) Integer productId,
+                                @RequestParam(value = "model", required = true) Integer model) {
         ModelAndView mv = ModelAndViewUtil.CreateModelAndView("views/productComment");
-        mv.addObject("productId",productId);
+        mv.addObject("productId", productId);
+        mv.addObject("model", model);
         return mv;
     }
 
@@ -161,4 +174,49 @@ public class IndexController {
     public ModelAndView register() {
         return new ModelAndView("register");
     }
+
+    @RequestMapping("/portal/personal")
+    @ResponseBody
+    public ModelAndView personal(@RequestParam(value = "id", required = true) Integer id) {
+        ModelAndView mv = ModelAndViewUtil.CreateModelAndView("views/personal");
+        mv.addObject("id", id);
+        return mv;
+    }
+
+    @RequestMapping("/portal/personal/user/info")
+    @ResponseBody
+    public ModelAndView userInfo(@RequestParam(value = "id", required = true) Integer id) {
+        ModelAndView mv = new ModelAndView("views/userInfo");
+        UserCriteria criteria = new UserCriteria();
+        criteria.setId(id);
+        mv.addObject("user", userService.search(criteria));
+        return mv;
+    }
+
+    @RequestMapping("/portal/personal/user/info/modify")
+    @ResponseBody
+    public ModelAndView userInfoModify() {
+        ModelAndView mv = new ModelAndView("views/myInfoModify");
+        mv.addObject("user", userService.getCurrentUser());
+        return mv;
+    }
+
+    @RequestMapping("/portal/personal/user/recent")
+    @ResponseBody
+    public ModelAndView userRecent(@RequestParam(value = "id", required = true) Integer id,
+                                   @RequestParam(value = "page", defaultValue = AppCondition.INIT_PAGE) Long page,
+                                   @RequestParam(value = "pageSize", defaultValue = AppCondition.INIT_PAGESIZE) Long pageSize) {
+        ModelAndView mv = new ModelAndView("views/userRecent");
+        UserCriteria userCriteria = new UserCriteria();
+        userCriteria.setId(id);
+        UserModel user = userService.search(userCriteria);
+        LogCriteria logCriteria = new LogCriteria();
+        logCriteria.setCreatorId(user.getId());
+        PageModel<LogModel> pageModel = logService.search(logCriteria, page, pageSize);
+        Pager pager = new Pager(pageModel.getTotalCount(), page, pageSize);
+        mv.addObject("logs", pageModel.getData());
+        mv.addObject("pager", pager);
+        return mv;
+    }
+
 }

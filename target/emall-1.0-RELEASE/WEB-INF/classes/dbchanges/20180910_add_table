@@ -1,0 +1,10 @@
+CREATE TABLE log(
+id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT ,
+productId INTEGER NOT NULL ,
+type INTEGER NOT NULL ,   -- 0：购买记录 1：卖出记录
+creatorId INTEGER NOT NULL ,
+creatorName VARCHAR (20) NOT NULL ,
+createdTime DATETIME NOT NULL DEFAULT NOW() ,
+FOREIGN KEY (productId) REFERENCES Product(id) ,
+FOREIGN KEY (creatorId) REFERENCES User(id)
+)

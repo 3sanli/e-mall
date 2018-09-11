@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC
+        "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.showtan.dao.UserPictureMapper">
+    <select id="getByUserId" resultType="String">
+        SELECT picture FROM UserPicture
+        WHERE userId = #{userId}
+    </select>
+
+    <insert id="save">
+        INSERT INTO UserPicture
+        (userId,picture)
+        VALUES(#{userId},#{picture})
+    </insert>
+
+    <update id="modify">
+        UPDATE UserPicture
+        <set>
+            <if test="picture != null">
+                picture = #{picture}
+            </if>
+        </set>
+        WHERE userId = #{userId}
+    </update>
+</mapper>

@@ -1,8 +1,10 @@
-<div th:replace="layouts/search"></div>
+<div style="width: 900px;margin: auto;">
+    <div th:replace="layouts/search"></div>
 
-<div class="items"></div>
+    <div class="items"></div>
 
-<div th:replace="layouts/pager"></div>
+    <div th:replace="layouts/pager"></div>
+</div>
 
 <script th:inline="javascript">
     var buys = /*[[${buys}]]*/{};
@@ -11,10 +13,10 @@
     $(document).ready(function () {
         renderBuys(buys);
         renderPager(pager);
-        $('#buttonPrePage').bind('click',function () {
+        $('#buttonPrePage').bind('click', function () {
             prePage(loadBuys);
         });
-        $('#buttonNextPage').bind('click',function () {
+        $('#buttonNextPage').bind('click', function () {
             nextPage(loadBuys);
         });
     })
@@ -33,7 +35,7 @@
             var item = $('<div class="media"></div>');
 
             var picture = $('<div class="media-left">\n' +
-                '        <a href="#">\n' +
+                '        <a href="/emall/product/detail?id=' + product.id + '">\n' +
                 '            <img style="width: 80px;height: 80px;" class="media-object" src="' + image + '" alt="' + product.name + '">\n' +
                 '        </a>\n' +
                 '    </div>');
@@ -41,7 +43,7 @@
             var info = $('<div class="media-body">\n' +
                 '        <a class="media-heading" href="/emall/product/detail?id=' + product.id + '">' + product.name + '</a>\n' +
                 '        <p>￥' + product.price + '</p>\n' +
-                '        <p>' + product.introduction + '</p>\n' +
+                '        <p>' + formatLongSentence(product.introduction,50) + '</p>\n' +
                 '        <p>' + buy.status + '</p>\n' +
                 '    </div>');
 
@@ -52,8 +54,8 @@
                 info.append('<button type="button" class="btn btn-danger" onclick="deleteBuy(' + buy.id + ')">删除</button>');
             }
 
-            if (buy.status == 'COMPLETED' && !buy.comment) {
-                info.append('<button type="button" class="btn btn-danger" onclick="goToComment('+ buy.productId +')">评论</button>');
+            if (buy.status == 'COMPLETED' && buy.comment == null) {
+                info.append('<button type="button" class="btn btn-danger" onclick="goToComment(' + buy.productId + ')">评论</button>');
             }
 
             item.append(picture);
@@ -64,23 +66,21 @@
 
     function loadBuys() {
         $.ajax({
-            type:'post',
-            url:'/emall/product/buy/search',
-            data:{
-                searchInfo:JSON.stringify({
-
-                }),
-                page:$('#nowPage').val()
+            type: 'post',
+            url: '/emall/product/buy/search',
+            data: {
+                searchInfo: JSON.stringify({}),
+                page: $('#nowPage').val()
             },
-            success:function (data) {
+            success: function (data) {
                 renderBuys(data.buys);
                 renderPager(data.pager);
             }
         })
     }
-    
+
     function goToComment(productId) {
-        window.location.href = "/emall/product/comment?productId=" + productId;
+        window.location.href = "/emall/product/comment?productId=" + productId + '&model=0';
     }
 
     function cancelBuy(id) {

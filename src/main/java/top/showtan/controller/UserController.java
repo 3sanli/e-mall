@@ -8,10 +8,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import top.showtan.model.UserModel;
 import top.showtan.model.criteria.UserCriteria;
+import top.showtan.service.UserPictureService;
 import top.showtan.service.UserService;
 import top.showtan.util.Response;
 
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Controller
@@ -19,6 +22,9 @@ import javax.servlet.http.HttpSession;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserPictureService userPictureService;
 
     @RequestMapping("/login")
     @ResponseBody
@@ -28,9 +34,6 @@ public class UserController {
             BeanUtils.copyProperties(user, criteria);
         }
         UserModel userModel = userService.search(criteria);
-        if (userModel == null) {
-            return Response.ERROR("404");
-        }
         if (!userModel.getPassword().equals(user.getPassword())) {
             return Response.ERROR("000");
         }
@@ -38,19 +41,33 @@ public class UserController {
         return Response.SUCCESS();
     }
 
+
+    @RequestMapping("/modify")
+    @ResponseBody
+    public Response modify(@RequestBody UserModel user,HttpSession session){
+        userService.modify(user);
+        UserCriteria criteria = new UserCriteria();
+        criteria.setId(user.getId());
+        UserModel userModel = userService.search(criteria);
+        session.setAttribute("user",userModel);
+        return Response.SUCCESS();
+    }
+
     @RequestMapping("/search")
     @ResponseBody
-    public Response search(@RequestBody UserModel user) {
+    public Map<String,Object> search(@RequestBody UserModel user) {
+        Map<String,Object> result = new HashMap<>();
         UserCriteria criteria = new UserCriteria();
         if (user != null) {
             BeanUtils.copyProperties(user, criteria);
         }
         UserModel userModel = userService.search(criteria);
-        if (userModel != null) {
-            return Response.ERROR("000");
+        if(userModel != null){
+            userModel.setPassword(null);
+            userModel.setPicture(userPictureService.getByUserId(userModel.getId()));
         }
-        //为空情况
-        return Response.ERROR("404");
+        result.put("user",userModel);
+        return result;
     }
 
     @RequestMapping("/register")

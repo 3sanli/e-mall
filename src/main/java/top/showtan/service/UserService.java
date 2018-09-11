@@ -1,5 +1,6 @@
 package top.showtan.service;
 
+import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -7,8 +8,10 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import top.showtan.dao.ProductMapper;
 import top.showtan.dao.UserMapper;
+import top.showtan.dao.UserPictureMapper;
 import top.showtan.entity.Product;
 import top.showtan.entity.User;
+import top.showtan.entity.UserPicture;
 import top.showtan.model.BuyModel;
 import top.showtan.model.UserModel;
 import top.showtan.model.criteria.ProductCriteria;
@@ -20,10 +23,16 @@ import javax.servlet.http.HttpSession;
 @Service
 public class UserService {
     @Autowired
+    private SqlSessionTemplate sqlSessionTemplate;
+
+    @Autowired
     private UserMapper userMapper;
 
     @Autowired
     private ProductMapper productMapper;
+
+    @Autowired
+    private UserPictureMapper userPictureMapper;
 
     /**
      * 获取本次登录对象信息
@@ -31,9 +40,13 @@ public class UserService {
      * @return
      */
     public UserModel getCurrentUser() {
+        //TO LEARN
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         HttpSession session = request.getSession();
         UserModel user = (UserModel) session.getAttribute("user");
+        if (user == null) {
+            return new UserModel();
+        }
         return user;
     }
 
@@ -50,7 +63,20 @@ public class UserService {
         }
         UserModel userModel = new UserModel();
         BeanUtils.copyProperties(user, userModel);
+        userModel.setPicture(userPictureMapper.getByUserId(userModel.getId()));
         return userModel;
+    }
+
+    /**
+     * 用户更改自身信息
+     *
+     * @param user
+     */
+    public void modify(UserModel user) {
+        //用户不予直接更新信誉值
+        user.setCredit(null);
+        userMapper.modify(user);
+//        userPictureMapper.modify(user.getId(),user.getPicture());
     }
 
     /**
@@ -59,7 +85,11 @@ public class UserService {
      * @param user
      */
     public void save(UserModel user) {
-        userMapper.save(user);
+        sqlSessionTemplate.insert("top.showtan.dao.UserMapper.save", user);
+        UserPicture userPicture = new UserPicture();
+        userPicture.setUserId(user.getId());
+        userPicture.setPicture(user.getPicture());
+        userPictureMapper.save(userPicture);
     }
 
     /**

@@ -28,7 +28,26 @@
         </where>
     </select>
 
+    <update id="modify">
+        UPDATE User
+        <trim prefix="set" suffixOverrides=",">
+            <if test="nickName != null">
+                nickName = #{nickName},
+            </if>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            <if test="credit != null">
+                credit = #{credit},
+            </if>
+        </trim>
+        WHERE id = #{id}
+    </update>
+
     <insert id="save">
+        <selectKey resultType="Integer" keyProperty="id" order="AFTER">
+          SELECT LAST_INSERT_ID()
+        </selectKey>
         INSERT INTO User
         (mobile,nickName,password)
         VALUES (#{mobile},#{nickName},#{password})

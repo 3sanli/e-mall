@@ -20,8 +20,9 @@ public interface UserMapper {
      * 持久化新用户信息到数据库中
      *
      * @param user
+     * @return
      */
-    void save(UserModel user);
+    Integer save(UserModel user);
 
     /**
      * 统计用户钱财
@@ -48,4 +49,11 @@ public interface UserMapper {
      */
     void addMoney(@Param("userId") Integer userId,
                   @Param("money") Long money);
+
+    /**
+     * 用户修改数据更新以及信誉值的更新
+     *
+     * @param userModel
+     */
+    void modify(UserModel userModel);
 }

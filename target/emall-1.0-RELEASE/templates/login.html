@@ -4,15 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script th:src="@{/static/scripts/jquery-1.10.2.min.js}"></script>
-    <link rel="stylesheet" type="text/css" th:href="@{/static/bootstrap/css/bootstrap.css}">
-    <link rel="stylesheet" type="text/css" th:href="@{/static/bootstrap/css/bootstrap-theme.css}">
-    <script th:src="@{/static/bootstrap/js/bootstrap.js}"></script>
-    <link rel="stylesheet" th:href="@{/static/kindeditor/themes/default/default.css}"/>
-    <link rel="stylesheet" th:href="@{/static/kindeditor/plugins/code/prettify.css}"/>
-    <script charset="utf-8" th:src="@{/static/kindeditor/kindeditor-all.js}"></script>
-    <script charset="utf-8" th:src="@{/static/kindeditor/lang/zh-CN.js}"></script>
-    <script charset="utf-8" th:src="@{/static/kindeditor/plugins/code/prettify.js}"></script>
-    <link th:href="@{/static/H-ui/lib/Hui-iconfont/1.0.8/iconfont.css}" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/static/bootstrap/css/bootstrap-theme.min.css}">
+    <script th:src="@{/static/bootstrap/js/bootstrap.min.js}"></script>
+    <link th:href="@{/static/H-ui/lib/Hui-iconfont/1.0.8/iconfont.min.css}" rel="stylesheet" type="text/css" />
     <title>login</title>
 </head>
 <body>
@@ -53,7 +48,7 @@
         </div>
         <div class="panel-body">
             <div class="col-lg-5" style="float:right;">
-                <button type="button" id="buttonLogin" th:value="0" class="btn btn-success" onclick="login()">Sign In
+                <button type="button" class="btn btn-success" onclick="signIn()">Sign In
                 </button>
             </div>
         </div>
@@ -67,11 +62,9 @@
 <script th:inline="javascript">
     var nickName = $('#userNickName');
     var password = $('#userPassword');
+    var defaultUserPicture = '/emall/static/picture/default.png';
     $(document).ready(function () {
         nickName.bind('blur', function () {
-            loadUser();
-        });
-        password.bind('blur', function () {
             loadUser();
         });
         nickName.bind('focus', function () {
@@ -86,13 +79,52 @@
         });
     })
 
-    function login() {
-        $('#buttonLogin').val(1);
-        loadUser();
+    function signIn() {
+        if(loadUser()){
+            loginUser();
+        }
     }
 
     function loadUser() {
-        if (validateInput(nickName.val()) && validateInput(password.val())) {
+        var result = false;
+        if (validateInput(nickName.val())) {
+            $.ajax({
+                async : false,
+                type: 'post',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    nickName: nickName.val(),
+                    mobile: nickName.val()
+                }),
+                url: '/emall/user/search',
+                success: function (data) {
+                    if (data.user == null) {
+                        nickName.css({
+                            'border-color': 'red'
+                        });
+                        $('#userImage').attr('src', defaultUserPicture);
+                        result = false;
+                    }
+                    else {
+                        if(data.user.picture != null){
+                            $('#userImage').attr('src', data.user.picture);
+                        }
+                        else{
+                            $('#userImage').attr('src', defaultUserPicture);
+                        }
+                        result = true;
+                    }
+                }
+            })
+        }
+        else{
+            result = false;
+        }
+        return result;
+    }
+
+    function loginUser() {
+        if (validateInput(nickName.val())) {
             $.ajax({
                 type: 'post',
                 contentType: 'application/json',
@@ -103,20 +135,12 @@
                 }),
                 url: '/emall/user/login',
                 success: function (data) {
-                    if (data.code == '1000' && $('#buttonLogin').val() == 1) {
-                        $('#buttonLogin').val(0);
+                    if (data.code == '1000') {
                         alert('登录成功');
                         window.location.href = '/emall/portal/product/list';
                     }
                     else {
-                        if (data.message == '404') {
-                            $('#buttonLogin').val(0);
-                            nickName.css({
-                                'border-color': 'red'
-                            });
-                        }
-                        else if (data.message == '000') {
-                            $('#buttonLogin').val(0);
+                        if (data.message == '000') {
                             password.css({
                                 'border-color': 'red'
                             });
@@ -125,10 +149,6 @@
                 }
             })
         }
-    }
-
-    function loadUserPicture() {
-
     }
 
     function validateInput(data) {

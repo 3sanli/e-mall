@@ -1,7 +1,5 @@
 package top.showtan.model;
 
-import top.showtan.entity.UserPicture;
-
 
 public class UserModel {
     /**
@@ -36,8 +34,10 @@ public class UserModel {
      * 用户信誉
      */
     private Integer credit;
-
-    private UserPicture picture;
+    /**
+     * 用户头像图片
+     */
+    private String picture;
 
     public Integer getId() {
         return id;
@@ -103,11 +103,11 @@ public class UserModel {
         this.credit = credit;
     }
 
-    public UserPicture getPicture() {
+    public String getPicture() {
         return picture;
     }
 
-    public void setPicture(UserPicture picture) {
+    public void setPicture(String picture) {
         this.picture = picture;
     }
 }

@@ -1,0 +1,69 @@
+<div class="panel panel-default col-lg-9" style="float:none;margin: 200px auto auto auto;">
+    <div class="panel-body">
+        <div class="panel-body">
+            <div class="col-lg-9" style="float:none;margin:100px auto auto auto;text-align: center;">
+                <img id="userImage" style="width: 100px;" src="/emall/static/picture/default.png" class="img-circle">
+                <!--<button type="button" class="btn btn-default">修改头像</button>-->
+            </div>
+        </div>
+        <div id="userInfoContent" style="float:none;margin:20px auto auto auto;">
+            <div class="panel-body">
+                <div class="col-lg-9" style="float:none;margin:auto;">
+                <span class="col-lg-5" style="text-align: right;height: inherit;">
+                    <i class="Hui-iconfont Hui-iconfont-phone-android"
+                       style="font-size: 25px;color: green; margin-right: 40px;"></i>
+                </span>
+                    <h3 id="mobile">mobile</h3>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-lg-9" style="float:none;margin:auto;">
+                <span class="col-lg-5" style="text-align: right;height: inherit;">
+                    <i class="Hui-iconfont Hui-iconfont-userid"
+                       style="font-size: 25px;color: green; margin-right: 40px;"></i>
+                </span>
+                    <h3 id="nickName">nickName</h3>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="col-lg-9" style="float:none;margin:auto;">
+                <span class="col-lg-5" style="text-align: right;height: inherit;">
+                    <i class="Hui-iconfont Hui-iconfont-practice"
+                       style="font-size: 25px;color: green; margin-right: 40px;"></i>
+                </span>
+                    <h3 id="credit"></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    var user = /*[[${user}]]*/{};
+    var currentUser = /*[[${session.user}]]*/{};
+
+    $(document).ready(function () {
+        $('#userImage').attr('src', user.picture);
+        $('#mobile').text(user.mobile);
+        $('#nickName').text(user.nickName);
+
+        for(i=0;i<user.credit;i++){
+            $('#credit').append('<i class="Hui-iconfont Hui-iconfont-like2"\n' +
+                '                                       style="font-size: 25px;color: red;"></i>');
+        }
+        if(user.credit == 0){
+            $('#credit').text('new');
+        }
+
+        if (user.id == currentUser.id) {
+            $('#userInfoContent').append('<div class="panel-body">\n' +
+                '            <div class="col-lg-9" style="float:right;text-align: center;">\n' +
+                '                <button type="button" id="userInfoModify" class="btn btn-info">修改</button>\n' +
+                '            </div>\n' +
+                '        </div>');
+            $('#userInfoModify').bind('click', function () {
+                $('#panelMain').load('/emall/portal/personal/user/info/modify');
+            })
+        }
+    })
+</script>
