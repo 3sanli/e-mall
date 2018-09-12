@@ -2,6 +2,7 @@ package top.showtan.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import top.showtan.dao.*;
 import top.showtan.entity.Buy;
 import top.showtan.entity.Product;
@@ -13,6 +14,7 @@ import top.showtan.model.criteria.CommentCriteria;
 import top.showtan.model.criteria.ProductCriteria;
 
 @Service
+@Transactional
 public class CommentService {
     @Autowired
     private CommentMapper commentMapper;

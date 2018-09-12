@@ -3,6 +3,7 @@ package top.showtan.service;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import top.showtan.dao.ProductCategoryMapper;
 import top.showtan.entity.ProductCategoryDict;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 public class ProductCategoryService {
     @Autowired
     private ProductCategoryMapper productCategoryMapper;

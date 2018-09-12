@@ -42,7 +42,7 @@
             <div class="form-group" style="display: inline;">
                 <label class="col-sm-2 control-label">商品图片</label>
                 <div class="col-sm-6">
-                <textarea name="content1"
+                <textarea name="content1" id="inputPicture"
                           cols="100" rows="8"
                           style="width:700px;height:200px;visibility:hidden;"></textarea>
                 </div>
@@ -60,8 +60,19 @@
     var product = /*[[${product}]]*/{};
     var pictures = [];
 
+    var inputProductCategory = $('#inputProductCategory');
+    var productId = $('#productId');
+    var inputName = $('#inputName');
+    var inputPrice = $('#inputPrice');
+    var inputIntroduction = $('#inputIntroduction');
+    var inputPicture = $('#inputPicture');
+
     $(document).ready(function () {
         getProductCategory();
+        bindBlurAndFoucs(inputProductCategory);
+        bindBlurAndFoucs(inputName);
+        bindBlurAndFoucs(inputPrice);
+        bindBlurAndFoucs(inputIntroduction);
     });
 
     KindEditor.ready(function (K) {
@@ -79,30 +90,51 @@
         prettyPrint();
     });
 
+    function validateInputPicture() {
+        if (!validateInput(pictures)) {
+            alert('请补充商品图片');
+            return false;
+        }
+        return true;
+    }
+
+    function preRelease() {
+        if (pointEmptyInput(inputProductCategory) &&
+            pointEmptyInput(inputName) &&
+            pointEmptyInput(inputPrice) &&
+            pointEmptyInput(inputIntroduction) &&
+            validateInputPicture()) {
+            return true;
+        }
+        return false;
+    }
+
     function release() {
-        $.ajax({
-            type: 'post',
-            contentType: 'application/json',
-            url: '/emall/product/save',
-            data: JSON.stringify({
-                id: $('#productId').val(),
-                productCategoryId: $('#inputProductCategory').val(),
-                name: $('#inputName').val(),
-                price: $('#inputPrice').val(),
-                introduction: $('#inputIntroduction').val(),
-                pictures: pictures
-            }),
-            success: function (data) {
-                pictures = [];
-                if (data.code == "1000") {
-                    alert('发布成功');
-                    window.location.href = '/emall/product/release/list';
+        if (preRelease()) {
+            $.ajax({
+                type: 'post',
+                contentType: 'application/json',
+                url: '/emall/product/save',
+                data: JSON.stringify({
+                    id: productId.val(),
+                    productCategoryId: inputProductCategory.val(),
+                    name: inputName.val(),
+                    price: inputPrice.val(),
+                    introduction: inputIntroduction.val(),
+                    pictures: pictures
+                }),
+                success: function (data) {
+                    pictures = [];
+                    if (data.code == "1000") {
+                        alert('发布成功');
+                        window.location.href = '/emall/product/release/list';
+                    }
+                    else if (data.code == "500") {
+                        alert('发布失败');
+                    }
                 }
-                else if (data.code == "500") {
-                    alert('发布失败');
-                }
-            }
-        })
+            })
+        }
     }
 
     function getProductCategory() {
@@ -115,13 +147,12 @@
     }
 
     function renderProductCategory(data) {
-        var productCategory = $('#inputProductCategory');
         $.each(data, function (i, category) {
             var categoryContent = $('<option value="' + category.id + '">' + category.category + '</option>');
             if (product != null && product.productCategoryId == category.id) {
                 categoryContent.attr('selected', 'selected');
             }
-            productCategory.append(categoryContent);
+            inputProductCategory.append(categoryContent);
         })
     }
 </script>

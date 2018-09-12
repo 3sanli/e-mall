@@ -59,7 +59,7 @@ public class BuyController {
 
     @RequestMapping("/save")
     @ResponseBody
-    public Response save(@RequestBody BuyModel buy) {
+    public synchronized Response save(@RequestBody BuyModel buy) {
         buy.setCreatorId(userService.getCurrentUser().getId());
         buy.setCreatorName(userService.getCurrentUser().getNickName());
 

@@ -8,10 +8,13 @@
     <link rel="stylesheet" type="text/css" th:href="@{/static/bootstrap/css/bootstrap-theme.min.css}">
     <script th:src="@{/static/bootstrap/js/bootstrap.min.js}"></script>
     <link th:href="@{/static/H-ui/lib/Hui-iconfont/1.0.8/iconfont.min.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/static/H-ui/lib/Hui-iconfont/1.0.8/iconfont.min.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/static/H-ui/static/h-ui/css/H-ui.min.css}" rel="stylesheet" type="text/css" />
+    <script charset="utf-8" th:src="@{/static/js/common.js}"></script>
     <title>login</title>
 </head>
 <body>
-<div style="width: 900px;margin: 100px auto auto auto;">
+<div style="width: 900px;margin: 150px auto auto auto;">
     <div class="jumbotron" style="background-color: #fff;text-align: center;">
         <h1>Hello, User!</h1>
         <p>welcome to showtan.top</p>
@@ -150,14 +153,6 @@
             })
         }
     }
-
-    function validateInput(data) {
-        if ($.trim(data) == null || $.trim(data) == '') {
-            return false;
-        }
-        return true;
-    }
 </script>
-</div>
 </body>
 </html>

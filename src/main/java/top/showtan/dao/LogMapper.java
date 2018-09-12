@@ -21,7 +21,7 @@ public interface LogMapper {
                      @Param("take") Long take);
 
     /**
-     * 根据条件查询该条件下所有记录
+     * 根据条件查询该条件下所有记录数
      *
      * @param criteria
      * @return

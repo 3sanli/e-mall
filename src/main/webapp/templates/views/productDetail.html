@@ -37,14 +37,17 @@
             <div class="page-header" style="text-align: center;">
                 <h2 id="productName"></h2>
             </div>
-            <div>
+            <div style="margin-top: 10px;">
                 <h3 id="productPrice"></h3>
             </div>
-            <div>
+            <div style="margin-top: 10px;">
                 <h4 id="productIntroduction"></h4>
             </div>
-            <div>
+            <div style="margin-top: 10px;">
                 <h4 id="productCategory"></h4>
+            </div>
+            <div style="margin-top: 10px;">
+                <h4 id="productCreator"></h4>
             </div>
             <div style="text-align: center;">
                 <button type="button" id="buttonBuy" class="btn btn-danger" onclick="productBuy()">立即购买</button>
@@ -109,10 +112,12 @@
         var productPrice = $('#productPrice');
         var productIntroduction = $('#productIntroduction');
         var productCategory = $('#productCategory');
+        var productCreator = $('#productCreator');
 
         productCategory.html('<span class="label label-default">分类</span>' + data.productCategoryId);
         productIntroduction.html('<span class="label label-default">简介</span>' + data.introduction);
         productPrice.html('<span class="label label-default">价格</span>' + data.price);
+        productCreator.html('<span class="label label-default">发布人</span><a href="/emall/portal/personal?id=' + product.creatorId + '" style="color: green;">' + data.creatorName + '</a>');
         productName.text(data.name);
     }
 

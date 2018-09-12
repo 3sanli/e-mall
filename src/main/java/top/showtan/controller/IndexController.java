@@ -37,24 +37,6 @@ public class IndexController {
     @Autowired
     private LogService logService;
 
-
-    /*@RequestMapping({"/", "/index"})
-    public ModelAndView index(@RequestParam(value = "searchInfo", required = false) String searchInfo,
-                                    @RequestParam(value = "page", defaultValue = AppCondition.INIT_PAGE) Long page,
-                                    @RequestParam(value = "pageSize", defaultValue = AppCondition.INIT_PAGESIZE) Long pageSize) {
-        ModelAndView mv = ModelAndViewUtil.CreateModelAndView("views/productList");
-        ProductCriteria criteria = new ProductCriteria();
-        if (!StringUtils.isEmpty(searchInfo)) {
-            criteria = JSON.parseObject(searchInfo, ProductCriteria.class);
-        }
-        PageModel<ProductModel> pageModel = productService.search(criteria, page, pageSize);
-        Pager pager = new Pager(pageModel.getTotalCount(), page, pageSize);
-        mv.addObject("products", pageModel.getData());
-        mv.addObject("name", criteria.getName());
-        mv.addObject("pager", pager);
-        return mv;
-    }*/
-
     @RequestMapping({"/portal/product/list", "/"})
     public ModelAndView listProduct(@RequestParam(value = "searchInfo", required = false) String searchInfo,
                                     @RequestParam(value = "page", defaultValue = AppCondition.INIT_PAGE) Long page,
@@ -207,13 +189,11 @@ public class IndexController {
                                    @RequestParam(value = "page", defaultValue = AppCondition.INIT_PAGE) Long page,
                                    @RequestParam(value = "pageSize", defaultValue = AppCondition.INIT_PAGESIZE) Long pageSize) {
         ModelAndView mv = new ModelAndView("views/userRecent");
-        UserCriteria userCriteria = new UserCriteria();
-        userCriteria.setId(id);
-        UserModel user = userService.search(userCriteria);
         LogCriteria logCriteria = new LogCriteria();
-        logCriteria.setCreatorId(user.getId());
+        logCriteria.setCreatorId(id);
         PageModel<LogModel> pageModel = logService.search(logCriteria, page, pageSize);
         Pager pager = new Pager(pageModel.getTotalCount(), page, pageSize);
+        mv.addObject("id", id);
         mv.addObject("logs", pageModel.getData());
         mv.addObject("pager", pager);
         return mv;

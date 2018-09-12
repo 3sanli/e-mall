@@ -130,7 +130,4 @@ public class ProductModel {
         this.pictures = pictures;
     }
 
- /*   public String getProductCategory(){
-
-    }*/
 }

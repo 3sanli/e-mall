@@ -16,6 +16,9 @@
         SELECT * FROM log
         WHERE creatorId = #{criteria.creatorId}
         ORDER BY createdTime DESC
+        <if test="skip &gt;= 0 and take &gt;= 0">
+            LIMIT #{skip},#{take}
+        </if>
     </select>
 
     <select id="countAll" resultType="Long">

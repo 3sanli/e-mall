@@ -115,7 +115,8 @@
     <select id="getByProductIdList" resultMap="productMap">
         SELECT * FROM Product
         <where>
-            <foreach collection="list" item="product" open="id in (" separator="," close=")" index="i">
+            <foreach collection="list" item="product"
+                     open="id in (" separator="," close=")" index="i">
                 #{product.id}
             </foreach>
         </where>

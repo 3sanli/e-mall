@@ -1,13 +1,23 @@
-<ul id="logMain" class="layui-timeline">
-</ul>
+<div>
+    <ul id="logMain" class="layui-timeline">
+    </ul>
+</div>
+<div style="text-align: center;">
+    <button type="button" id="nowPage" th:value="1" class="btn btn-info" onclick="loadLogs()">显示更多</button>
+</div>
+
 <script th:inline="javascript">
+    var id = /*[[${id}]]*/{};
     var logs = /*[[${logs}]]*/{};
     var pager = /*[[${pager}]]*/{};
     var logMain = $('#logMain');
     var defaultImage = '/emall/static/picture/default.png';
 
+    var nowPage = $('#nowPage');
+
     $(document).ready(function () {
         renderLogs(logs);
+        renderPager(pager);
     })
 
     function renderLogs(logs) {
@@ -25,7 +35,7 @@
                 '                <br>' + log.product.introduction + '\n' +
                 '            </p>');
             var comment = null;
-            if(log.comment != null){
+            if (log.comment != null) {
                 comment = $('<ul class="commentList">\n' +
                     '  <li class="item cl"> <a href="#"><i class="avatar size-L radius"><img alt="' + log.comment.creatorName + '" src="' + defaultImage + '"></i></a>\n' +
                     '    <div class="comment-main">\n' +
@@ -46,6 +56,32 @@
             content.find('div').append(product);
             content.find('div').append(comment);
             logMain.append(content);
+        })
+    }
+
+    function renderPager(pager) {
+        nowPage.val(pager.currentPage);
+        if (pager.currentPage == pager.totalPage) {
+            nowPage.attr('disabled', 'disabled');
+            nowPage.attr('class', 'btn btn-default');
+        }
+        if (pager.totalPage == 0) {
+            nowPage.attr('class', 'btn btn-default');
+            nowPage.attr('disabled', 'disabled');
+        }
+    }
+
+    function loadLogs() {
+        $.ajax({
+            url: '/emall/log/search',
+            data: {
+                id: id,
+                page: parseInt(nowPage.val()) + 1
+            },
+            success: function (data) {
+                renderLogs(data.logs);
+                renderPager(data.pager);
+            }
         })
     }
 
